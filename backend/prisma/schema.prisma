@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model control_log {
+  time      DateTime @db.DateTime(0)
+  device_id Int
+  house_id  String   @db.Char(36)
+  action    String   @db.VarChar(45)
+  device    device   @relation(fields: [device_id, house_id], references: [device_id, house_id], onDelete: Cascade, map: "fk_control_log_device1")
+
+  @@id([time, house_id, device_id])
+  @@index([device_id, house_id], map: "fk_control_log_device1_idx")
+}
+
+model device {
+  device_id   Int @default(autoincrement())
+  house_id    String        @db.Char(36)
+  floor_id    Int
+  room_id     Int?
+  x           Float?        @db.Float
+  y           Float?        @db.Float
+  name        String        @db.VarChar(45)
+  type        String        @db.VarChar(45)
+  init_time   DateTime      @db.DateTime(0)
+  update_time DateTime?     @db.DateTime(0)
+  status      String        @db.VarChar(45)
+  control_log control_log[]
+  floor       floor         @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_device_floor1")
+  house       house         @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_device_house1")
+  room        room?         @relation(fields: [room_id, floor_id, house_id], references: [room_id, floor_id, house_id], onDelete: Cascade, map: "fk_device_room1")
+
+  @@id([device_id, house_id])
+  @@index([floor_id, house_id], map: "fk_device_floor1_idx")
+  @@index([house_id], map: "fk_device_house1_idx")
+  @@index([room_id, floor_id, house_id], map: "fk_device_room1_idx")
+}
+
+model floor {
+  floor_id Int @default(autoincrement())
+  house_id String   @db.Char(36)
+  device   device[]
+  house    house    @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_floor_house1")
+  room     room[]
+  sensor   sensor[]
+
+  @@id([floor_id, house_id])
+  @@index([house_id], map: "fk_floor_house1_idx")
+}
+
+model house {
+  house_id    String    @id @default(uuid()) @db.Char(36)
+  length      Float     @db.Float
+  width       Float     @db.Float
+  init_time   DateTime  @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  device      device[]
+  floor       floor[]
+  sensor      sensor[]
+  user        user[]
+}
+
+model noti {
+  noti_id String   @id @default(uuid()) @db.Char(36)
+  uid     String   @db.Char(36)
+  time    DateTime @db.DateTime(0)
+  content String   @db.VarChar(500)
+  read    Boolean  @db.Bit(1)
+  user    user     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "fk_noti_user")
+
+  @@index([uid], map: "fk_noti_user_idx")
+}
+
+model room {
+  room_id  Int @default(autoincrement())
+  floor_id Int
+  house_id String   @db.Char(36)
+  length   Float    @db.Float
+  width    Float    @db.Float
+  x        Float    @db.Float
+  y        Float    @db.Float
+  device   device[]
+  floor    floor    @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_room_floor1")
+  sensor   sensor[]
+
+  @@id([room_id, floor_id, house_id])
+  @@index([floor_id, house_id], map: "fk_room_floor1_idx")
+}
+
+model sensor {
+  sensor_id   Int @default(autoincrement())
+  house_id    String       @db.Char(36)
+  floor_id    Int
+  room_id     Int?
+  x           Float?       @db.Float
+  y           Float?       @db.Float
+  name        String       @db.VarChar(45)
+  type        String       @db.VarChar(45)
+  init_time   DateTime     @db.DateTime(0)
+  update_time DateTime?    @db.DateTime(0)
+  floor       floor        @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_sensor_floor1")
+  house       house        @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_sensor_house1")
+  room        room?        @relation(fields: [room_id, floor_id, house_id], references: [room_id, floor_id, house_id], onDelete: Cascade, map: "fk_sensor_room1")
+  sensor_log  sensor_log[]
+
+  @@id([sensor_id, house_id])
+  @@index([floor_id, house_id], map: "fk_sensor_floor1_idx")
+  @@index([house_id], map: "fk_sensor_house1_idx")
+  @@index([room_id, floor_id, house_id], map: "fk_sensor_room1_idx")
+}
+
+model sensor_log {
+  time      DateTime @db.DateTime(0)
+  sensor_id Int
+  house_id  String   @db.Char(36)
+  value     String   @db.VarChar(500)
+  sensor    sensor   @relation(fields: [sensor_id, house_id], references: [sensor_id, house_id], onDelete: Cascade, map: "fk_sensor_log_sensor1")
+
+  @@id([time, sensor_id, house_id])
+  @@index([sensor_id, house_id], map: "fk_sensor_log_sensor1_idx")
+}
+
+model user {
+  uid         String    @id @default(uuid()) @db.Char(36)
+  username    String    @db.VarChar(45)
+  password    String    @db.VarChar(45)
+  email       String    @db.VarChar(45)
+  phone       String?   @db.VarChar(12)
+  name        String?   @db.VarChar(45)
+  age         Int?
+  house_id    String?   @db.Char(36)
+  root_owner  Boolean?  @db.Bit(1)
+  own_time    DateTime? @db.DateTime(0)
+  create_time DateTime  @db.DateTime(0)
+  update_time DateTime? @db.DateTime(0)
+  noti        noti[]
+  house       house?    @relation(fields: [house_id], references: [house_id], map: "fk_user_house1")
+
+  @@index([house_id], map: "fk_user_house1_idx")
+}

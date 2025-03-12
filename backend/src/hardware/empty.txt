@@ -1,0 +1,1 @@
+Thư mục này chứa các logic để backend của web giao tiếp được với các sensor và device phần cứng
