@@ -59,6 +59,8 @@ model house {
   width       Float     @db.Float
   init_time   DateTime  @db.DateTime(0)
   update_time DateTime? @db.DateTime(0)
+  verify_code Int?      @db.Int
+  verify_time DateTime? @db.DateTime(0)
   device      device[]
   floor       floor[]
   sensor      sensor[]

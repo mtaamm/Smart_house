@@ -16,6 +16,8 @@ async function main() {
       length: 20,
       width: 10,
       init_time: new Date(),
+      verify_code: null,
+      verify_time: null,
     },
   });
 

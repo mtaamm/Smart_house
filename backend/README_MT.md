@@ -12,7 +12,7 @@ Trong quá trình hiện thực model thì có thể tạo các thư mục phụ
 
 Thư mục backend/src/example: chứ ví dụ, như đã nói ở trên
 
-Các chạy backend ban đầu
+Cách chạy backend lần đầu
 
 - Đảm bảo đã cài đặt và sử dụng được 'npm'
 - Cài đặt mysql, setup các thứ
