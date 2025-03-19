@@ -29,7 +29,6 @@ model device {
   type        String        @db.VarChar(45)
   init_time   DateTime      @db.DateTime(0)
   update_time DateTime?     @db.DateTime(0)
-  status      String        @db.VarChar(45)
   control_log control_log[]
   floor       floor         @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_device_floor1")
   house       house         @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_device_house1")

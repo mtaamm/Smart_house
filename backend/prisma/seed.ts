@@ -68,8 +68,8 @@ async function main() {
 
   // Tạo 7 thiết bị (đèn)
   const devices = [
-    { device_id: 1, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "light", x: 10, y: 5, status: "off", init_time: new Date() },
-    { device_id: 2, house_id: houseId, floor_id: 2, name: "Đèn tầng 2", type: "light", x: 10, y: 5, status: "off", init_time: new Date() },
+    { device_id: 1, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "light", x: 10, y: 5, init_time: new Date() },
+    { device_id: 2, house_id: houseId, floor_id: 2, name: "Đèn tầng 2", type: "light", x: 10, y: 5, init_time: new Date() },
     ...rooms.map((room, index) => ({
       device_id: index + 3,
       house_id: houseId,
@@ -79,7 +79,6 @@ async function main() {
       type: "light",
       x: room.x,
       y: room.y,
-      status: "off",
       init_time: new Date(),
     })),
   ];
