@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { HouseDTO } from './dto/response.dto';
+import hardware from 'src/hardware/hardware';
 
 const prisma = new PrismaClient();
 
 @Injectable()
 export class HouseService {
+
   async getHouseMap(): Promise<HouseDTO | null> {
     try {
       const house = await prisma.house.findFirst({
@@ -38,13 +40,17 @@ export class HouseService {
               device_id: device.device_id,
               device_type: device.type,
               device_name: device.name,
-              status: device.status,
+              status: hardware.getStatus(house.house_id, device.device_id),
             })),
             sensors: room.sensor.map((sensor) => ({
               sensor_id: sensor.sensor_id,
               sensor_type: sensor.type,
               sensor_name: sensor.name,
-              value: {}, // Xử lý dữ liệu sensor sau
+              value: sensor.type === 'temperature_humidity'
+              ? hardware.getTempHumi(house.house_id, sensor.sensor_id)
+              : sensor.type === 'light'
+              ? hardware.getLight(house.house_id, sensor.sensor_id)
+              : {},
             })),
           })),
           devices: floor.device.map((device) => ({
@@ -52,7 +58,7 @@ export class HouseService {
               device_id: device.device_id,
               device_type: device.type,
               device_name: device.name,
-              status: device.status,
+              status: hardware.getStatus(house.house_id, device.device_id),
             },
             x: device.x,
             y: device.y,
@@ -62,7 +68,11 @@ export class HouseService {
               sensor_id: sensor.sensor_id,
               sensor_type: sensor.type,
               sensor_name: sensor.name,
-              value: {}, // Xử lý dữ liệu sensor sau
+              value: sensor.type === 'temperature_humidity'
+              ? hardware.getTempHumi(house.house_id, sensor.sensor_id)
+              : sensor.type === 'light'
+              ? hardware.getLight(house.house_id, sensor.sensor_id)
+              : {},
             },
             x: sensor.x,
             y: sensor.y,

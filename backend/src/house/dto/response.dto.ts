@@ -2,7 +2,7 @@ export class DeviceDTO {
   device_id: number;
   device_type: string;
   device_name: string;
-  status: string;
+  status: any;
 }
 
 export class SensorDTO {
