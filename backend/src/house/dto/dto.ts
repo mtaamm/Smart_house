@@ -2,6 +2,7 @@ export class Device {
   device_id: number;
   device_type: string;
   device_name: string;
+  color: string;
   status: any;
 }
 
@@ -9,6 +10,7 @@ export class Sensor {
   sensor_id: number;
   sensor_type: string;
   sensor_name: string;
+  color: string;
   value: any;
 }
 
@@ -18,6 +20,7 @@ export class Room {
   width: number;
   x: number;
   y: number;
+  color: string;
   devices: Device[];
   sensors: Sensor[];
 }
@@ -53,4 +56,17 @@ export class ApiResponse<T> {
   status: 'successful' | 'unsuccessful';
   message: string;
   data: T | null;
+}
+
+export class ApiResponse2 {
+  status: string;
+  message: string;
+}
+
+export class HouseMember {
+  uid: string;
+  name: string;
+  age: number;
+  phone_number: string;
+  email: string;
 }
