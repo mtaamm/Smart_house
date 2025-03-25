@@ -58,27 +58,28 @@ async function main() {
 
   // Tạo 5 phòng
   const rooms = [
-    { room_id: 1, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 2, y: 2 },
-    { room_id: 2, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 6, y: 2 },
-    { room_id: 3, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 2, y: 6 },
-    { room_id: 4, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 6, y: 6 },
-    { room_id: 5, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 10, y: 6 },
+    { room_id: 1, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 2, y: 2, color: "0033ff" },
+    { room_id: 2, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 6, y: 2, color: "ff0000" },
+    { room_id: 3, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 2, y: 6, color: "ff0000" },
+    { room_id: 4, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 6, y: 6, color: "ff0000" },
+    { room_id: 5, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 10, y: 6, color: "ff0000" },
   ];
   await prisma.room.createMany({ data: rooms });
 
   // Tạo 7 thiết bị (đèn)
   const devices = [
-    { device_id: 1, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "light", x: 10, y: 5, init_time: new Date() },
-    { device_id: 2, house_id: houseId, floor_id: 2, name: "Đèn tầng 2", type: "light", x: 10, y: 5, init_time: new Date() },
+    { device_id: 1, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
+    { device_id: 2, house_id: houseId, floor_id: 2, name: "Quạt tầng 2", type: "fan", x: 10, y: 5, color: "ffffff", init_time: new Date() },
     ...rooms.map((room, index) => ({
       device_id: index + 3,
       house_id: houseId,
       floor_id: room.floor_id,
       room_id: room.room_id,
       name: `Đèn phòng ${room.room_id}`,
-      type: "light",
+      type: "rgb",
       x: room.x,
       y: room.y,
+      color: "ffffff",
       init_time: new Date(),
     })),
   ];
@@ -86,8 +87,8 @@ async function main() {
 
   // Tạo 2 cảm biến nhiệt độ, độ ẩm
   const sensors = [
-    { sensor_id: 1, house_id: houseId, floor_id: 1, name: "Cảm biến tầng 1", type: "temperature_humidity", x: 2, y: 1, init_time: new Date() },
-    { sensor_id: 2, house_id: houseId, floor_id: 2, name: "Cảm biến tầng 2", type: "temperature_humidity", x: 2, y: 1, init_time: new Date() },
+    { sensor_id: 1, house_id: houseId, floor_id: 1, name: "Cảm biến tầng 1", type: "temp_humi", x: 2, y: 1, color: "ffffff", init_time: new Date() },
+    { sensor_id: 2, house_id: houseId, floor_id: 2, name: "Cảm biến tầng 2", type: "light", x: 2, y: 1, color: "ffffff", init_time: new Date() },
   ];
   await prisma.sensor.createMany({ data: sensors });
 

@@ -1,15 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { HouseService } from './house.service';
-import { HouseDTO, ApiResponseDTO } from './dto/response.dto';
+import { House, ApiResponse } from './dto/response.dto';
 
 @Controller('house')
 export class HouseController {
   constructor(private readonly houseService: HouseService) {}
 
   @Get('getmap')
-  async getHouseMap(): Promise<ApiResponseDTO<HouseDTO>> {
+  async getHouseMap(house_id: string): Promise<ApiResponse<House>> {
     try {
-      const houseMap = await this.houseService.getHouseMap();
+      const houseMap = await this.houseService.getHouseMap(house_id);
 
       if (!houseMap) {
         return {

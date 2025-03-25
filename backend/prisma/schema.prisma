@@ -27,6 +27,7 @@ model device {
   y           Float?        @db.Float
   name        String        @db.VarChar(45)
   type        String        @db.VarChar(45)
+  color       String        @db.VarChar(6)
   init_time   DateTime      @db.DateTime(0)
   update_time DateTime?     @db.DateTime(0)
   control_log control_log[]
@@ -85,6 +86,7 @@ model room {
   width    Float    @db.Float
   x        Float    @db.Float
   y        Float    @db.Float
+  color    String   @db.VarChar(6)
   device   device[]
   floor    floor    @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_room_floor1")
   sensor   sensor[]
@@ -102,6 +104,7 @@ model sensor {
   y           Float?       @db.Float
   name        String       @db.VarChar(45)
   type        String       @db.VarChar(45)
+  color       String       @db.VarChar(6)
   init_time   DateTime     @db.DateTime(0)
   update_time DateTime?    @db.DateTime(0)
   floor       floor        @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_sensor_floor1")

@@ -1,55 +1,55 @@
-export class DeviceDTO {
+export class Device {
   device_id: number;
   device_type: string;
   device_name: string;
   status: any;
 }
 
-export class SensorDTO {
+export class Sensor {
   sensor_id: number;
   sensor_type: string;
   sensor_name: string;
   value: any;
 }
 
-export class RoomDTO {
+export class Room {
   room_id: number;
   length: number;
   width: number;
   x: number;
   y: number;
-  devices: DeviceDTO[];
-  sensors: SensorDTO[];
+  devices: Device[];
+  sensors: Sensor[];
 }
 
-export class FloorDeviceDTO {
-  device: DeviceDTO;
+export class FloorDevice {
+  device: Device;
   x: number;
   y: number;
 }
 
-export class FloorSensorDTO {
-  sensor: SensorDTO;
+export class FloorSensor {
+  sensor: Sensor;
   x: number;
   y: number;
 }
 
-export class FloorDTO {
+export class Floor {
   floor_id: number;
-  rooms: RoomDTO[];
-  devices: FloorDeviceDTO[];
-  sensors: FloorSensorDTO[];
+  rooms: Room[];
+  devices: FloorDevice[];
+  sensors: FloorSensor[];
 }
 
-export class HouseDTO {
+export class House {
   house_id: string;
   length: number;
   width: number;
-  floors: FloorDTO[];
+  floors: Floor[];
 }
 
 
-export class ApiResponseDTO<T> {
+export class ApiResponse<T> {
   status: 'successful' | 'unsuccessful';
   message: string;
   data: T | null;
