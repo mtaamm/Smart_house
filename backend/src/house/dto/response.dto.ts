@@ -27,13 +27,21 @@ export class Room {
 }
 
 export class FloorDevice {
-  device: Device;
+  device_id: number;
+  device_type: string;
+  device_name: string;
+  color: string;
+  status: any;
   x: number;
   y: number;
 }
 
 export class FloorSensor {
-  sensor: Sensor;
+  sensor_id: number;
+  sensor_type: string;
+  sensor_name: string;
+  color: string;
+  value: any;
   x: number;
   y: number;
 }

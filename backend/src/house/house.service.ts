@@ -76,13 +76,11 @@ export class HouseService {
             ),
             devices: await Promise.all(
               floor.device.map(async (device) => ({
-                device: {
-                  device_id: device.device_id,
-                  device_type: device.type,
-                  device_name: device.name,
-                  color: device.color,
-                  status: {}, //await hardware.getStatus(house.house_id, device.device_id),
-                },
+                device_id: device.device_id,
+                device_type: device.type,
+                device_name: device.name,
+                color: device.color,
+                status: {}, //await hardware.getStatus(house.house_id, device.device_id),
                 x: device.x,
                 y: device.y,
               })),
@@ -99,13 +97,11 @@ export class HouseService {
                 //   },
                 // });
                 return {
-                  sensor: {
-                    sensor_id: sensor.sensor_id,
-                    sensor_type: sensor.type,
-                    sensor_name: sensor.name,
-                    color: sensor.color,
-                    value: {}, //value thay bằng value khi fix xong hardware
-                  },
+                  sensor_id: sensor.sensor_id,
+                  sensor_type: sensor.type,
+                  sensor_name: sensor.name,
+                  color: sensor.color,
+                  value: {}, //value thay bằng value khi fix xong hardware
                   x: sensor.x,
                   y: sensor.y,
                 };
