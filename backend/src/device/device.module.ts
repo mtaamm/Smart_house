@@ -5,6 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   providers: [DeviceService, PrismaService],
-  controllers: [DeviceController]
+  controllers: [DeviceController],
 })
 export class DeviceModule {}

@@ -16,6 +16,7 @@ export class Sensor {
 
 export class Room {
   room_id: number;
+  name: string;
   length: number;
   width: number;
   x: number;
@@ -50,7 +51,6 @@ export class House {
   width: number;
   floors: Floor[];
 }
-
 
 export class ApiResponse<T> {
   status: 'successful' | 'unsuccessful';

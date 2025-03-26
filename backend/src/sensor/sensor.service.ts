@@ -13,33 +13,39 @@ export class SensorService {
       where: { house_id },
     });
 
-    const sensorList = await Promise.all(sensors.map(async (sensor) => {
-      // const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
-      // await prisma.sensor_log.create({
-      //   data: {
-      //     house_id: house_id,
-      //     sensor_id: sensor.sensor_id,
-      //     value: JSON.stringify(value),
-      //     time: new Date(),
-      //   },
-      // });
-      return {
-        sensor_id: sensor.sensor_id,
-        sensor_type: sensor.type,
-        sensor_name: sensor.name,
-        color: sensor.color,
-        value: {}, // thay bằng value khi fix xong hardware
-        floor_id: sensor.floor_id,
-        room_id: sensor.room_id ? sensor.room_id : null,
-        x: sensor.x,
-        y: sensor.y,
-      };
-    }));
+    const sensorList = await Promise.all(
+      sensors.map(async (sensor) => {
+        // const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
+        // await prisma.sensor_log.create({
+        //   data: {
+        //     house_id: house_id,
+        //     sensor_id: sensor.sensor_id,
+        //     value: JSON.stringify(value),
+        //     time: new Date(),
+        //   },
+        // });
+        return {
+          sensor_id: sensor.sensor_id,
+          sensor_type: sensor.type,
+          sensor_name: sensor.name,
+          color: sensor.color,
+          value: {}, // thay bằng value khi fix xong hardware
+          floor_id: sensor.floor_id,
+          room_id: sensor.room_id ? sensor.room_id : null,
+          x: sensor.x,
+          y: sensor.y,
+        };
+      }),
+    );
 
     return sensorList;
   }
 
-  private async getSensorValue(house_id: string, sensor_id: number, sensor_type: string): Promise<any> {
+  private async getSensorValue(
+    house_id: string,
+    sensor_id: number,
+    sensor_type: string,
+  ): Promise<any> {
     switch (sensor_type) {
       case 'temp_humi':
         return await hardware.getTempHumi(house_id, sensor_id);
@@ -50,7 +56,11 @@ export class SensorService {
     }
   }
 
-  async getSensorDetail(uid: string, house_id: string, sensor_id: number): Promise<SensorDetail | null> {
+  async getSensorDetail(
+    uid: string,
+    house_id: string,
+    sensor_id: number,
+  ): Promise<SensorDetail | null> {
     await this.validateUserAndHouse(uid, house_id);
     const sensor = await prisma.sensor.findFirst({
       where: { house_id, sensor_id },
@@ -77,7 +87,7 @@ export class SensorService {
       orderBy: { time: 'desc' },
     });
 
-    const sensorLogs: SensorLog[] = logs.map(log => ({
+    const sensorLogs: SensorLog[] = logs.map((log) => ({
       time: log.time.toISOString(),
       value: log.value,
     }));
@@ -98,7 +108,17 @@ export class SensorService {
     };
   }
 
-  async addSensor(uid: string, house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async addSensor(
+    uid: string,
+    house_id: string,
+    name: string,
+    type: string,
+    color: string,
+    floor_id: number,
+    room_id: number,
+    x: number | null,
+    y: number | null,
+  ): Promise<boolean> {
     await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
@@ -137,7 +157,15 @@ export class SensorService {
     return !!newSensor;
   }
 
-  async updateSensorPosition(uid: string, house_id: string, sensor_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async updateSensorPosition(
+    uid: string,
+    house_id: string,
+    sensor_id: number,
+    floor_id: number,
+    room_id: number,
+    x: number | null,
+    y: number | null,
+  ): Promise<boolean> {
     await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
@@ -176,7 +204,11 @@ export class SensorService {
     return !!updatedSensor;
   }
 
-  async deleteSensor(uid: string, house_id: string, sensor_id: number): Promise<boolean> {
+  async deleteSensor(
+    uid: string,
+    house_id: string,
+    sensor_id: number,
+  ): Promise<boolean> {
     await this.validateUserAndHouse(uid, house_id);
     const sensor = await prisma.sensor.findFirst({
       where: { house_id, sensor_id },
