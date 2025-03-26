@@ -1,8 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { SensorService } from './sensor.service';
-import { ApiResponse, ApiResponse2, SensorDetail } from './dto/dto';
-import { Sensor } from './dto/dto';
+import { ApiResponse, ApiResponse2, SensorDetail } from './dto/response.dto';
+import { Sensor } from './dto/response.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AddSensorDto, DeleteSensorDto, UpdateSensorPositionDto } from './dto/request.dto';
 
+@ApiTags('Sensor')
 @Controller('sensor')
 export class SensorController {
   constructor(private readonly sensorService: SensorService) {}
@@ -78,17 +81,10 @@ export class SensorController {
   }
 
   @Post('add')
-  async addSensor(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('name') name: string,
-    @Body('type') type: string,
-    @Body('color') color: string,
-    @Body('floor_id') floor_id: number,
-    @Body('room_id') room_id: string,
-    @Body('x') x: number | null,
-    @Body('y') y: number | null,
-  ): Promise<ApiResponse2> {
+  @ApiOperation({ summary: 'Add a new sensor, use -1 for null value' })
+  async addSensor(@Body() addSensorDto: AddSensorDto): Promise<ApiResponse2> {
+    const { uid, house_id, name, type, color, floor_id, room_id, x, y } =
+      addSensorDto;
     try {
       const success = await this.sensorService.addSensor(
         uid,
@@ -96,10 +92,10 @@ export class SensorController {
         name,
         type,
         color,
-        Number(floor_id),
-        Number(room_id),
-        Number(x),
-        Number(y),
+        floor_id,
+        room_id,
+        x,
+        y,
       );
 
       if (!success) {
@@ -123,24 +119,21 @@ export class SensorController {
   }
 
   @Post('update')
+  @ApiOperation({ summary: 'Update sensor position, use -1 for null value' })
   async updateSensorPosition(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('sensor_id') sensor_id: number,
-    @Body('floor_id') floor_id: number,
-    @Body('room_id') room_id: number,
-    @Body('x') x: number | null,
-    @Body('y') y: number | null,
+    @Body() updateSensorPositionDto: UpdateSensorPositionDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, sensor_id, floor_id, room_id, x, y } =
+      updateSensorPositionDto;
     try {
       const success = await this.sensorService.updateSensorPosition(
         uid,
         house_id,
-        Number(sensor_id),
-        Number(floor_id),
-        Number(room_id),
-        Number(x),
-        Number(y),
+        sensor_id,
+        floor_id,
+        room_id,
+        x,
+        y,
       );
 
       if (!success) {
@@ -164,16 +157,16 @@ export class SensorController {
   }
 
   @Post('delete')
+  @ApiOperation({ summary: 'Delete a sensor' })
   async deleteSensor(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('sensor_id') sensor_id: number,
+    @Body() deleteSensorDto: DeleteSensorDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, sensor_id } = deleteSensorDto;
     try {
       const success = await this.sensorService.deleteSensor(
         uid,
         house_id,
-        Number(sensor_id),
+        sensor_id,
       );
 
       if (!success) {

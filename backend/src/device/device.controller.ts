@@ -1,8 +1,11 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { DeviceService } from './device.service';
-import { ApiResponse, ApiResponse2, DeviceDetail } from './dto/dto';
-import { Device } from './dto/dto';
+import { ApiResponse, ApiResponse2, DeviceDetail } from './dto/response.dto';
+import { Device } from './dto/response.dto';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { AddDeviceDto, ControlDeviceDto, DeleteDeviceDto, UpdateDevicePositionDto } from './dto/request.dto';
 
+@ApiTags('Device')
 @Controller('device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
@@ -78,17 +81,16 @@ export class DeviceController {
   }
 
   @Post('control')
+  @ApiOperation({ summary: 'Control a device' })
   async controlDevice(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('device_id') device_id: string,
-    @Body('action') action: string,
+    @Body() controlDeviceDto: ControlDeviceDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, device_id, action } = controlDeviceDto;
     try {
       const success = await this.deviceService.controlDevice(
         uid,
         house_id,
-        Number(device_id),
+        device_id,
         action,
       );
 
@@ -113,24 +115,21 @@ export class DeviceController {
   }
 
   @Post('update')
+  @ApiOperation({ summary: 'Update device position, use -1 for null value' })
   async updateDevicePosition(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('device_id') device_id: number,
-    @Body('floor_id') floor_id: number,
-    @Body('room_id') room_id: number,
-    @Body('x') x: number | null,
-    @Body('y') y: number | null,
+    @Body() updateDevicePositionDto: UpdateDevicePositionDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, device_id, floor_id, room_id, x, y } =
+      updateDevicePositionDto;
     try {
       const success = await this.deviceService.updateDevicePosition(
         uid,
         house_id,
-        Number(device_id),
-        Number(floor_id),
-        Number(room_id),
-        Number(x),
-        Number(y),
+        device_id,
+        floor_id,
+        room_id,
+        x,
+        y,
       );
 
       if (!success) {
@@ -154,17 +153,10 @@ export class DeviceController {
   }
 
   @Post('add')
-  async addDevice(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('name') name: string,
-    @Body('type') type: string,
-    @Body('color') color: string,
-    @Body('floor_id') floor_id: number,
-    @Body('room_id') room_id: string,
-    @Body('x') x: number | null,
-    @Body('y') y: number | null,
-  ): Promise<ApiResponse2> {
+  @ApiOperation({ summary: 'Add a new device, use -1 for null value' })
+  async addDevice(@Body() addDeviceDto: AddDeviceDto): Promise<ApiResponse2> {
+    const { uid, house_id, name, type, color, floor_id, room_id, x, y } =
+      addDeviceDto;
     try {
       const success = await this.deviceService.addDevice(
         uid,
@@ -172,10 +164,10 @@ export class DeviceController {
         name,
         type,
         color,
-        Number(floor_id),
-        Number(room_id),
-        Number(x),
-        Number(y),
+        floor_id,
+        room_id,
+        x,
+        y,
       );
 
       if (!success) {
@@ -199,16 +191,16 @@ export class DeviceController {
   }
 
   @Post('delete')
+  @ApiOperation({ summary: 'Delete a device' })
   async deleteDevice(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('device_id') device_id: number,
+    @Body() deleteDeviceDto: DeleteDeviceDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, device_id } = deleteDeviceDto;
     try {
       const success = await this.deviceService.deleteDevice(
         uid,
         house_id,
-        Number(device_id),
+        device_id,
       );
 
       if (!success) {

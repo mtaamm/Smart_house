@@ -24,11 +24,13 @@
     "@nestjs/common": "^11.0.12",
     "@nestjs/core": "^11.0.12",
     "@nestjs/platform-express": "^11.0.12",
+    "@nestjs/swagger": "^11.1.0",
     "@prisma/client": "^6.5.0",
     "mailersend": "^2.4.0",
     "mqtt": "^5.10.4",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2",
+    "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0"
   },
   "devDependencies": {

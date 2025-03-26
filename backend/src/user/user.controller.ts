@@ -1,6 +1,7 @@
 import { Body, Controller, Get, Post, Put, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiResponse } from '../house/dto/dto';
+import { ApiResponse } from '../house/dto/response.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 interface SignUpParam {
   username: string;
@@ -16,6 +17,7 @@ interface Auth {
   auth_code: string;
 }
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

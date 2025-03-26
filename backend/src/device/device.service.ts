@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { Device, DeviceDetail, ControlLog } from './dto/dto';
+import { Device, DeviceDetail, ControlLog } from './dto/response.dto';
 import hardware from 'src/hardware/hardware';
 
 const prisma = new PrismaClient();

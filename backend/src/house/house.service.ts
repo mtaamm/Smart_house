@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { House, HouseMember } from './dto/dto';
+import { House, HouseMember } from './dto/response.dto';
 import hardware from 'src/hardware/hardware';
 import { Floor, HouseCreate, HouseUpdate } from './dto/request.dto';
 import { v4 as uuidv4 } from 'uuid';

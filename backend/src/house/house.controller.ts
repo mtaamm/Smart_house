@@ -1,16 +1,18 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { HouseService } from './house.service';
-import { House, ApiResponse, HouseMember, ApiResponse2 } from './dto/dto';
-import { HouseCreate, HouseUpdate } from './dto/request.dto';
+import { House, ApiResponse, HouseMember, ApiResponse2 } from './dto/response.dto';
+import { DeleteMemberDto, HouseCreate, HouseUpdate } from './dto/request.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('House')
 @Controller('house')
 export class HouseController {
   constructor(private readonly houseService: HouseService) {}
 
   @Get('getmap')
   async getHouseMap(
-    uid: string,
-    house_id: string,
+    @Query('uid') uid: string,
+    @Query('house_id') house_id: string,
   ): Promise<ApiResponse<House>> {
     try {
       const houseMap = await this.houseService.getHouseMap(uid, house_id);
@@ -40,8 +42,8 @@ export class HouseController {
 
   @Get('get-members')
   async getHouseMembers(
-    uid: string,
-    house_id: string,
+    @Query('uid') uid: string,
+    @Query('house_id') house_id: string,
   ): Promise<ApiResponse<HouseMember[]>> {
     try {
       const houseMembers = await this.houseService.getHouseMembers(
@@ -74,10 +76,9 @@ export class HouseController {
 
   @Post('delete-member')
   async deleteMember(
-    @Body('uid') uid: string,
-    @Body('house_id') house_id: string,
-    @Body('member_id') member_id: string,
+    @Body() deleteMemberDto: DeleteMemberDto,
   ): Promise<ApiResponse2> {
+    const { uid, house_id, member_id } = deleteMemberDto;
     console.log('house_id:', house_id);
     console.log('member_id:', member_id);
     try {
