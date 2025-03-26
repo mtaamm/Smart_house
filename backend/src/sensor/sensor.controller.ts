@@ -8,9 +8,9 @@ export class SensorController {
   constructor(private readonly sensorService: SensorService) {}
 
   @Get('getlist')
-  async getSensorList(@Query('house_id') house_id: string): Promise<ApiResponse<Sensor[]>> {
+  async getSensorList(@Query('uid') uid: string, @Query('house_id') house_id: string): Promise<ApiResponse<Sensor[]>> {
     try {
-      const sensors = await this.sensorService.getDevicesByHouseId(house_id);
+      const sensors = await this.sensorService.getDevicesByHouseId(uid, house_id);
 
       if (!sensors || sensors.length === 0) {
         return {
@@ -36,9 +36,9 @@ export class SensorController {
   }
 
   @Get('detail')
-  async getSensorDetail(@Query('house_id') house_id: string, @Query('sensor_id') sensor_id: number): Promise<ApiResponse<SensorDetail>> {
+  async getSensorDetail(@Query('uid') uid: string, @Query('house_id') house_id: string, @Query('sensor_id') sensor_id: number): Promise<ApiResponse<SensorDetail>> {
     try {
-      const sensorDetail = await this.sensorService.getSensorDetail(house_id, sensor_id);
+      const sensorDetail = await this.sensorService.getSensorDetail(uid, house_id, sensor_id);
 
       if (!sensorDetail) {
         return {
@@ -65,6 +65,7 @@ export class SensorController {
 
   @Post('add')
   async addSensor(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('name') name: string,
     @Body('type') type: string,
@@ -75,7 +76,7 @@ export class SensorController {
     @Body('y') y: number | null
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.sensorService.addSensor(house_id, name, type, color, Number(floor_id), Number(room_id), Number(x), Number(y));
+      const success = await this.sensorService.addSensor(uid, house_id, name, type, color, Number(floor_id), Number(room_id), Number(x), Number(y));
 
       if (!success) {
         return {
@@ -99,6 +100,7 @@ export class SensorController {
 
   @Post('update')
   async updateSensorPosition(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('sensor_id') sensor_id: number,
     @Body('floor_id') floor_id: number,
@@ -107,7 +109,7 @@ export class SensorController {
     @Body('y') y: number | null
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.sensorService.updateSensorPosition(house_id, Number(sensor_id), Number(floor_id), Number(room_id), Number(x), Number(y));
+      const success = await this.sensorService.updateSensorPosition(uid, house_id, Number(sensor_id), Number(floor_id), Number(room_id), Number(x), Number(y));
 
       if (!success) {
         return {
@@ -131,11 +133,12 @@ export class SensorController {
 
   @Post('delete')
   async deleteSensor(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('sensor_id') sensor_id: number
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.sensorService.deleteSensor(house_id, Number(sensor_id));
+      const success = await this.sensorService.deleteSensor(uid, house_id, Number(sensor_id));
 
       if (!success) {
         return {

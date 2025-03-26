@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post, Put, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiResponse } from '../house/dto/response.dto';
+import { ApiResponse } from '../house/dto/dto';
 
 interface SignUpParam {
   username: string;

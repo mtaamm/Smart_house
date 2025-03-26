@@ -60,11 +60,11 @@ async function main() {
 
   // Tạo 5 phòng
   const rooms = [
-    { room_id: 1, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 2, y: 2, color: "0033ff" },
-    { room_id: 2, floor_id: 1, house_id: houseId, length: 5, width: 5, x: 6, y: 2, color: "ff0000" },
-    { room_id: 3, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 2, y: 6, color: "ff0000" },
-    { room_id: 4, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 6, y: 6, color: "ff0000" },
-    { room_id: 5, floor_id: 2, house_id: houseId, length: 5, width: 5, x: 10, y: 6, color: "ff0000" },
+    { room_id: 1, floor_id: 1, house_id: houseId, name: "Phòng 101", length: 5, width: 5, x: 2, y: 2, color: "0033ff" },
+    { room_id: 2, floor_id: 1, house_id: houseId, name: "Phòng 102", length: 5, width: 5, x: 6, y: 2, color: "ff0000" },
+    { room_id: 3, floor_id: 2, house_id: houseId, name: "Phòng 201", length: 5, width: 5, x: 2, y: 6, color: "ff0000" },
+    { room_id: 4, floor_id: 2, house_id: houseId, name: "Phòng 202", length: 5, width: 5, x: 6, y: 6, color: "ff0000" },
+    { room_id: 5, floor_id: 2, house_id: houseId, name: "Phòng 203", length: 5, width: 5, x: 10, y: 6, color: "ff0000" },
   ];
   await prisma.room.createMany({ data: rooms });
 

@@ -8,9 +8,9 @@ export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
   @Get('getlist')
-  async getDeviceList(@Query('house_id') house_id: string): Promise<ApiResponse<Device[]>> {
+  async getDeviceList(@Query('uid') uid: string, @Query('house_id') house_id: string): Promise<ApiResponse<Device[]>> {
     try {
-      const devices = await this.deviceService.getDevicesByHouseId(house_id);
+      const devices = await this.deviceService.getDevicesByHouseId(uid, house_id);
 
       if (!devices || devices.length === 0) {
         return {
@@ -36,9 +36,9 @@ export class DeviceController {
   }
 
   @Get('detail')
-  async getDeviceDetail(@Query('house_id') house_id: string, @Query('device_id') device_id: string): Promise<ApiResponse<DeviceDetail>> {
+  async getDeviceDetail(@Query('uid') uid: string, @Query('house_id') house_id: string, @Query('device_id') device_id: string): Promise<ApiResponse<DeviceDetail>> {
     try {
-      const deviceDetail = await this.deviceService.getDeviceById(house_id, Number(device_id));
+      const deviceDetail = await this.deviceService.getDeviceById(uid, house_id, Number(device_id));
 
       if (!deviceDetail) {
         return {
@@ -65,12 +65,13 @@ export class DeviceController {
 
   @Post('control')
   async controlDevice(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('device_id') device_id: string,
     @Body('action') action: string
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.deviceService.controlDevice(house_id, Number(device_id), action);
+      const success = await this.deviceService.controlDevice(uid, house_id, Number(device_id), action);
 
       if (!success) {
         return {
@@ -94,6 +95,7 @@ export class DeviceController {
 
   @Post('update')
   async updateDevicePosition(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('device_id') device_id: number,
     @Body('floor_id') floor_id: number,
@@ -102,7 +104,7 @@ export class DeviceController {
     @Body('y') y: number | null
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.deviceService.updateDevicePosition(house_id, Number(device_id), Number(floor_id), Number(room_id), Number(x), Number(y));
+      const success = await this.deviceService.updateDevicePosition(uid, house_id, Number(device_id), Number(floor_id), Number(room_id), Number(x), Number(y));
 
       if (!success) { 
         return {
@@ -126,6 +128,7 @@ export class DeviceController {
 
   @Post('add')
   async addDevice(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('name') name: string,
     @Body('type') type: string,
@@ -136,7 +139,7 @@ export class DeviceController {
     @Body('y') y: number | null
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.deviceService.addDevice(house_id, name, type, color, Number(floor_id), Number(room_id), Number(x), Number(y));
+      const success = await this.deviceService.addDevice(uid, house_id, name, type, color, Number(floor_id), Number(room_id), Number(x), Number(y));
 
       if (!success) {
         return {
@@ -160,11 +163,12 @@ export class DeviceController {
 
   @Post('delete')
   async deleteDevice(
+    @Body('uid') uid: string,
     @Body('house_id') house_id: string,
     @Body('device_id') device_id: number
   ): Promise<ApiResponse2> {
     try {
-      const success = await this.deviceService.deleteDevice(house_id, Number(device_id));
+      const success = await this.deviceService.deleteDevice(uid, house_id, Number(device_id));
 
       if (!success) {
         return {

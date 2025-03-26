@@ -10,7 +10,8 @@ const prisma = new PrismaClient();
 @Injectable()
 export class HouseService {
 
-  async getHouseMap(house_id: string): Promise<House | null> {
+  async getHouseMap(uid: string, house_id: string): Promise<House | null> {
+    await this.validateUserAndHouse(uid, house_id);
     try {
       const house = await prisma.house.findFirst({
         where: { house_id: house_id },
@@ -118,7 +119,8 @@ export class HouseService {
     }
   }
 
-  async getHouseMembers(house_id: string): Promise<HouseMember[] | null> {
+  async getHouseMembers(uid: string, house_id: string): Promise<HouseMember[] | null> {
+    await this.validateUserAndHouse(uid, house_id);
     try {
       const members = await prisma.user.findMany({
         where: { house_id: house_id },
@@ -139,7 +141,8 @@ export class HouseService {
     }
   }
 
-  async deleteMember(house_id: string, member_id: string): Promise<string> {
+  async deleteMember(uid: string, house_id: string, member_id: string): Promise<string> {
+    await this.validateUserAndHouse(uid, house_id);
     try {
       const member = await prisma.user.findFirst({
         where: { house_id: house_id, uid: member_id },
@@ -192,6 +195,7 @@ export class HouseService {
   }
 
   async updateHouse(houseUpdate: HouseUpdate): Promise<boolean> {
+    await this.validateUserAndHouse(houseUpdate.uid, houseUpdate.house_id);
     const house = await prisma.house.findUnique({
       where: { house_id: houseUpdate.house_id },
     });
@@ -307,6 +311,20 @@ export class HouseService {
           },
         });
       }
+    }
+  }
+
+  async validateUserAndHouse(uid: string, house_id: string): Promise<void> {
+    const user = await prisma.user.findUnique({
+      where: { uid },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (user.house_id !== house_id) {
+      throw new Error('User does not belong to the specified house');
     }
   }
 }

@@ -82,6 +82,7 @@ model room {
   room_id  Int @default(autoincrement())
   floor_id Int
   house_id String   @db.Char(36)
+  name     String   @db.VarChar(50)
   length   Float    @db.Float
   width    Float    @db.Float
   x        Float    @db.Float

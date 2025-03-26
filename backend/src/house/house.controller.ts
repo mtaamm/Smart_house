@@ -8,9 +8,9 @@ export class HouseController {
   constructor(private readonly houseService: HouseService) {}
 
   @Get('getmap')
-  async getHouseMap(house_id: string): Promise<ApiResponse<House>> {
+  async getHouseMap(uid: string, house_id: string): Promise<ApiResponse<House>> {
     try {
-      const houseMap = await this.houseService.getHouseMap(house_id);
+      const houseMap = await this.houseService.getHouseMap(uid, house_id);
 
       if (!houseMap) {
         return {
@@ -36,9 +36,9 @@ export class HouseController {
   }
 
   @Get('get-members')
-  async getHouseMembers(house_id: string): Promise<ApiResponse<HouseMember[]>> {
+  async getHouseMembers(uid: string, house_id: string): Promise<ApiResponse<HouseMember[]>> {
     try {
-      const houseMembers = await this.houseService.getHouseMembers(house_id);
+      const houseMembers = await this.houseService.getHouseMembers(uid, house_id);
 
       if (!houseMembers) {
         return {
@@ -64,11 +64,11 @@ export class HouseController {
   }
 
   @Post('delete-member')
-  async deleteMember(@Body('house_id') house_id: string, @Body('member_id') member_id: string): Promise<ApiResponse2> {
+  async deleteMember(@Body('uid') uid: string, @Body('house_id') house_id: string, @Body('member_id') member_id: string): Promise<ApiResponse2> {
     console.log('house_id:', house_id);
     console.log('member_id:', member_id);
     try {
-      const deleteResult = await this.houseService.deleteMember(house_id, member_id);
+      const deleteResult = await this.houseService.deleteMember(uid, house_id, member_id);
 
       if (deleteResult !== 'successful') {
         return {

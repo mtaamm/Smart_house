@@ -50,6 +50,7 @@ export class HouseCreate {
 }
 
 export class HouseUpdate {
+  uid: string;
   house_id: string;
   length: number;
   width: number;

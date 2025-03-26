@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class DeviceService {
-  async getDevicesByHouseId(house_id: string): Promise<Device[]> {
+  async getDevicesByHouseId(uid: string, house_id: string): Promise<Device[]> {
+    await this.validateUserAndHouse(uid, house_id);
     const devices = await prisma.device.findMany({
       where: { house_id },
     });
@@ -27,7 +28,8 @@ export class DeviceService {
     return deviceList;
   }
 
-  async getDeviceById(house_id: string, device_id: number): Promise<DeviceDetail> {
+  async getDeviceById(uid: string, house_id: string, device_id: number): Promise<DeviceDetail> {
+    await this.validateUserAndHouse(uid, house_id);
     const device = await prisma.device.findFirst({
       where: { house_id, device_id },
     });
@@ -64,7 +66,8 @@ export class DeviceService {
     return result;
   }
 
-  async controlDevice(house_id: string, device_id: number, action: string): Promise<boolean> {
+  async controlDevice(uid: string, house_id: string, device_id: number, action: string): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     const device = await prisma.device.findFirst({
       where: { house_id, device_id },
     });
@@ -105,7 +108,8 @@ export class DeviceService {
     return success;
   }
 
-  async updateDevicePosition(house_id: string, device_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async updateDevicePosition(uid: string, house_id: string, device_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     room_id = room_id==-1?null:room_id;
     x = x==-1?null:x;
     y = y==-1?null:y;
@@ -142,7 +146,8 @@ export class DeviceService {
     return !!updatedDevice;
   }
 
-  async addDevice(house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async addDevice(uid: string, house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
     y = y === -1 ? null : y;
@@ -180,7 +185,8 @@ export class DeviceService {
     return !!newDevice;
   }
 
-  async deleteDevice(house_id: string, device_id: number): Promise<boolean> {
+  async deleteDevice(uid: string, house_id: string, device_id: number): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     const device = await prisma.device.findFirst({
       where: { house_id, device_id },
     });
@@ -194,5 +200,19 @@ export class DeviceService {
     });
   
     return !!deletedDevice;
+  }
+
+  async validateUserAndHouse(uid: string, house_id: string): Promise<void> {
+    const user = await prisma.user.findUnique({
+      where: { uid },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (user.house_id !== house_id) {
+      throw new Error('User does not belong to the specified house');
+    }
   }
 }

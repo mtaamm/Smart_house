@@ -7,7 +7,8 @@ const prisma = new PrismaClient();
 
 @Injectable()
 export class SensorService {
-  async getDevicesByHouseId(house_id: string): Promise<Sensor[]> {
+  async getDevicesByHouseId(uid: string, house_id: string): Promise<Sensor[]> {
+    await this.validateUserAndHouse(uid, house_id);
     const sensors = await prisma.sensor.findMany({
       where: { house_id },
     });
@@ -49,7 +50,8 @@ export class SensorService {
     }
   }
 
-  async getSensorDetail(house_id: string, sensor_id: number): Promise<SensorDetail | null> {
+  async getSensorDetail(uid: string, house_id: string, sensor_id: number): Promise<SensorDetail | null> {
+    await this.validateUserAndHouse(uid, house_id);
     const sensor = await prisma.sensor.findFirst({
       where: { house_id, sensor_id },
     });
@@ -96,7 +98,8 @@ export class SensorService {
     };
   }
 
-  async addSensor(house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async addSensor(uid: string, house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
     y = y === -1 ? null : y;
@@ -134,7 +137,8 @@ export class SensorService {
     return !!newSensor;
   }
 
-  async updateSensorPosition(house_id: string, sensor_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async updateSensorPosition(uid: string, house_id: string, sensor_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
     y = y === -1 ? null : y;
@@ -172,7 +176,8 @@ export class SensorService {
     return !!updatedSensor;
   }
 
-  async deleteSensor(house_id: string, sensor_id: number): Promise<boolean> {
+  async deleteSensor(uid: string, house_id: string, sensor_id: number): Promise<boolean> {
+    await this.validateUserAndHouse(uid, house_id);
     const sensor = await prisma.sensor.findFirst({
       where: { house_id, sensor_id },
     });
@@ -186,5 +191,19 @@ export class SensorService {
     });
 
     return !!deletedSensor;
+  }
+
+  async validateUserAndHouse(uid: string, house_id: string): Promise<void> {
+    const user = await prisma.user.findUnique({
+      where: { uid },
+    });
+
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+
+    if (user.house_id !== house_id) {
+      throw new Error('User does not belong to the specified house');
+    }
   }
 }
