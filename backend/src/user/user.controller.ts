@@ -1,16 +1,8 @@
-import { Body, Controller, Get, Post, Put, Delete } from '@nestjs/common';
+import { Body, Query, Controller, Get, Post, Put, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiResponse } from '../house/dto/response.dto';
-import { ApiTags } from '@nestjs/swagger';
-
-interface SignUpParam {
-  username: string;
-  password: string;
-  name: string;
-  age: number;
-  phone_number: string;
-  email: string;
-}
+import {SignUpParam, UserInfUpdateReq, verifyRequestCode, verifyHouse, LoginReq, Logout} from './userDTO/request.dto';
+import {Login, UserInf, NotiInf, UsrInfUpdateRes, ApiResponse} from './userDTO/respone.dto';
+import { ApiTags, ApiProperty } from '@nestjs/swagger';
 
 interface Auth {
   uid: string;
@@ -24,30 +16,30 @@ export class UserController {
   @Post('sign-up')
   async signUp(
     @Body() param: SignUpParam,
-  ): Promise<ApiResponse<{ auth: Auth }>> {
+  ): Promise<ApiResponse<string>> {
     try {
       const auth = await this.userService.signUp(param);
       return {
         status: 'successful',
         message: 'User registered successfully',
-        data: { auth },
+        data: auth,
       };
     } catch (error) {
       console.error('Error during sign-up:', error);
       return {
         status: 'unsuccessful',
         message: error.message || 'An error occurred',
-        data: null,
+        data: '',
       };
     }
   }
 
   @Post('verify-request-code')
   async verifyRequestCode(
-    @Body() param: { auth: Auth; houseId: string },
+    @Body() param: verifyRequestCode,
   ): Promise<ApiResponse<null>> {
     try {
-      await this.userService.sendVerificationCode(param.auth, param.houseId);
+      await this.userService.sendVerificationCode(param.uid, param.houseId);
       return {
         status: 'successful',
         message: 'Verification code sent successfully',
@@ -65,11 +57,11 @@ export class UserController {
 
   @Post('verify-house')
   async verifyHouse(
-    @Body() param: { auth: Auth; house_id: string; code: string },
+    @Body() param: verifyHouse,
   ): Promise<ApiResponse<null>> {
     try {
       await this.userService.verifyHouse(
-        param.auth,
+        param.uid,
         param.house_id,
         param.code,
       );
@@ -90,9 +82,9 @@ export class UserController {
 
   @Post('login')
   async login(
-    @Body() param: { username: string; password: string },
+    @Body() param: LoginReq,
   ): Promise<
-    ApiResponse<{ auth: Auth; own_house: boolean; root_owner: boolean }>
+    ApiResponse<Login>
   > {
     try {
       const loginResponse = await this.userService.login(
@@ -115,9 +107,9 @@ export class UserController {
   }
 
   @Post('logout')
-  async logout(@Body() param: { auth: Auth }): Promise<ApiResponse<null>> {
+  async logout(@Body() param: Logout): Promise<ApiResponse<null>> {
     try {
-      await this.userService.logout(param.auth);
+      await this.userService.logout(param.uid);
       return {
         status: 'successful',
         message: 'Logout successful',
@@ -134,19 +126,11 @@ export class UserController {
   }
 
   @Get('get')
-  async getUser(@Body() param: { auth: Auth }): Promise<
-    ApiResponse<{
-      uid: string;
-      house_id: string | null;
-      root_owner: boolean;
-      name: string;
-      age: number | null;
-      phone_number: string | null;
-      email: string;
-    }>
+  async getUser(@Query('uid') uid: string): Promise<
+    ApiResponse<UserInf>
   > {
     try {
-      const userInfo = await this.userService.getUserInfo(param.auth);
+      const userInfo = await this.userService.getUserInfo(uid);
       return {
         status: 'successful',
         message: 'User information retrieved successfully',
@@ -163,20 +147,11 @@ export class UserController {
   }
 
   @Get('get-noti')
-  async getNotifications(@Body() param: { auth: Auth }): Promise<
-    ApiResponse<{
-      total: number;
-      unread: number;
-      notices: Array<{
-        id: string;
-        time: string;
-        content: string;
-        read: boolean;
-      }>;
-    }>
+  async getNotifications(@Query('uid') uid: string): Promise<
+    ApiResponse<NotiInf>
   > {
     try {
-      const notifications = await this.userService.getNotifications(param.auth);
+      const notifications = await this.userService.getNotifications(uid);
       return {
         status: 'successful',
         message: 'Notifications retrieved successfully',
@@ -193,33 +168,9 @@ export class UserController {
   }
 
   @Put('update')
-  async updateUser(
-    @Body()
-    param: {
-      auth: Auth;
-      data: {
-        name: string;
-        age: number;
-        phone_number: string;
-        email: string;
-      };
-    },
-  ): Promise<
-    ApiResponse<{
-      uid: string;
-      house_id: string | null;
-      root_owner: boolean;
-      name: string;
-      age: number | null;
-      phone_number: string | null;
-      email: string;
-    }>
-  > {
+  async updateUser(@Body() param: UserInfUpdateReq ): Promise<ApiResponse<UsrInfUpdateRes>> {
     try {
-      const updatedUser = await this.userService.updateUserInfo(
-        param.auth,
-        param.data,
-      );
+      const updatedUser = await this.userService.updateUserInfo(param);
       return {
         status: 'successful',
         message: 'User information updated successfully',
