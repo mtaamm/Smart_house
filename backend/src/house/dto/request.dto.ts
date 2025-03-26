@@ -58,8 +58,17 @@ export class Room {
 }
 
 export class FloorDevice {
-  @ApiProperty({ description: 'Device information' })
-  device: Device;
+  @ApiProperty({ description: 'Unique ID of the device' })
+  device_id: number;
+
+  @ApiProperty({ description: 'Type of the device (e.g., rgb, fan)' })
+  device_type: string;
+
+  @ApiProperty({ description: 'Name of the device' })
+  device_name: string;
+
+  @ApiProperty({ description: 'Color of the device in hex format' })
+  color: string;
 
   @ApiProperty({ description: 'X-coordinate of the device on the floor' })
   x: number;
@@ -69,8 +78,17 @@ export class FloorDevice {
 }
 
 export class FloorSensor {
-  @ApiProperty({ description: 'Sensor information' })
-  sensor: Sensor;
+  @ApiProperty({ description: 'Unique ID of the sensor' })
+  sensor_id: number;
+
+  @ApiProperty({ description: 'Type of the sensor (e.g., temp_humi, light)' })
+  sensor_type: string;
+
+  @ApiProperty({ description: 'Name of the sensor' })
+  sensor_name: string;
+
+  @ApiProperty({ description: 'Color of the sensor in hex format' })
+  color: string;
 
   @ApiProperty({ description: 'X-coordinate of the sensor on the floor' })
   x: number;

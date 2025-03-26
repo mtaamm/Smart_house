@@ -306,12 +306,12 @@ export class HouseService {
       for (const floorDevice of floor.devices) {
         await prisma.device.create({
           data: {
-            device_id: floorDevice.device.device_id,
+            device_id: floorDevice.device_id,
             house_id: house_id,
             floor_id: newFloor.floor_id,
-            name: floorDevice.device.device_name,
-            type: floorDevice.device.device_type,
-            color: floorDevice.device.color,
+            name: floorDevice.device_name,
+            type: floorDevice.device_type,
+            color: floorDevice.color,
             x: floorDevice.x,
             y: floorDevice.y,
             init_time: new Date(),
@@ -322,12 +322,12 @@ export class HouseService {
       for (const floorSensor of floor.sensors) {
         await prisma.sensor.create({
           data: {
-            sensor_id: floorSensor.sensor.sensor_id,
+            sensor_id: floorSensor.sensor_id,
             house_id: house_id,
             floor_id: newFloor.floor_id,
-            name: floorSensor.sensor.sensor_name,
-            type: floorSensor.sensor.sensor_type,
-            color: floorSensor.sensor.color,
+            name: floorSensor.sensor_name,
+            type: floorSensor.sensor_type,
+            color: floorSensor.color,
             x: floorSensor.x,
             y: floorSensor.y,
             init_time: new Date(),
