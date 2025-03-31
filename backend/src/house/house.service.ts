@@ -75,18 +75,22 @@ export class HouseService {
               })),
             ),
             devices: await Promise.all(
-              floor.device.map(async (device) => ({
-                device_id: device.device_id,
-                device_type: device.type,
-                device_name: device.name,
-                color: device.color,
-                status: await hardware.getStatus("house1", device.device_id),
-                x: device.x,
-                y: device.y,
-              })),
+              floor.device
+                .filter((device) => device.x !== null && device.y !== null) // Lọc thiết bị có x và y khác null
+                .map(async (device) => ({
+                  device_id: device.device_id,
+                  device_type: device.type,
+                  device_name: device.name,
+                  color: device.color,
+                  status: await hardware.getStatus("house1", device.device_id),
+                  x: device.x,
+                  y: device.y,
+                })),
             ),
             sensors: await Promise.all(
-              floor.sensor.map(async (sensor) => {
+              floor.sensor
+              .filter((sensor) => sensor.x !== null && sensor.y !== null) // Lọc cảm biến có x và y khác null
+              .map(async (sensor) => {
                 const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
                 await prisma.sensor_log.create({
                   data: {

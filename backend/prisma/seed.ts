@@ -69,10 +69,16 @@ async function main() {
 
   // Tạo 4 cửa, 2 đèn, 2 quạt
   const devices = [
-    { device_id: 1, house_id: houseId, floor_id: 1, name: "Cửa phòng 1", type: "door", x: null, y: null, room_id: 1, color: "ffffff", init_time: new Date() },
-    { device_id: 2, house_id: houseId, floor_id: 1, name: "Cửa phòng 2", type: "door", x: null, y: null, room_id: 2, color: "ffffff", init_time: new Date() },
-    { device_id: 3, house_id: houseId, floor_id: 2, name: "Cửa phòng 3", type: "door", x: null, y: null, room_id: 3, color: "ffffff", init_time: new Date() },
-    { device_id: 4, house_id: houseId, floor_id: 2, name: "Cửa phòng 4", type: "door", x: null, y: null, room_id: 4, color: "ffffff", init_time: new Date() },
+    ...rooms.map((room, index) => ({
+      device_id: index+1,
+      house_id: houseId,
+      floor_id: room.floor_id,
+      room_id: room.room_id,
+      name: `Cửa phòng ${room.room_id}`,
+      type: "door",
+      color: "ffffff",
+      init_time: new Date(),
+    })),
     { device_id: 5, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
     { device_id: 6, house_id: houseId, floor_id: 2, name: "Đèn tầng 2", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
     { device_id: 7, house_id: houseId, floor_id: 1, name: "Quạt tầng 1", type: "fan", x: 10, y: 5, color: "ffffff", init_time: new Date() },
@@ -82,10 +88,16 @@ async function main() {
 
   // Tạo 4 cảm biến ánh sáng. 1 temp_humi
   const sensors = [
-    { sensor_id: 1, house_id: houseId, floor_id: 1, name: "Cảm biến 1", type: "light", x: null, y: null, room_id: 1, color: "ffffff", init_time: new Date() },
-    { sensor_id: 2, house_id: houseId, floor_id: 1, name: "Cảm biến 2", type: "light", x: null, y: null, room_id: 2, color: "ffffff", init_time: new Date() },
-    { sensor_id: 3, house_id: houseId, floor_id: 2, name: "Cảm biến 3", type: "light", x: null, y: null, room_id: 3, color: "ffffff", init_time: new Date() },
-    { sensor_id: 4, house_id: houseId, floor_id: 2, name: "Cảm biến 4", type: "light", x: null, y: null, room_id: 4, color: "ffffff", init_time: new Date() },
+    ...rooms.map((room, index) => ({
+      sensor_id: index+1,
+      house_id: houseId,
+      floor_id: room.floor_id,
+      room_id: room.room_id,
+      name: `Cảm biến ánh sáng phòng ${room.room_id}`,
+      type: "light",
+      color: "ffffff",
+      init_time: new Date(),
+    })),
     { sensor_id: 5, house_id: houseId, floor_id: 1, name: "Cảm biến 5", type: "temp_humi", x: 6, y: 7, room_id: null, color: "ffffff", init_time: new Date() },
   ];
   await prisma.sensor.createMany({ data: sensors });
