@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { Sensor, SensorDetail, SensorLog } from './dto/response.dto';
-import hardware from 'src/hardware/hardware';
+import * as hardware from 'src/hardware/hardware';
 
 const prisma = new PrismaClient();
 
@@ -15,21 +15,21 @@ export class SensorService {
 
     const sensorList = await Promise.all(
       sensors.map(async (sensor) => {
-        // const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
-        // await prisma.sensor_log.create({
-        //   data: {
-        //     house_id: house_id,
-        //     sensor_id: sensor.sensor_id,
-        //     value: JSON.stringify(value),
-        //     time: new Date(),
-        //   },
-        // });
+        const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+        await prisma.sensor_log.create({
+          data: {
+            house_id: house_id,
+            sensor_id: sensor.sensor_id,
+            value: JSON.stringify(value),
+            time: new Date(),
+          },
+        });
         return {
           sensor_id: sensor.sensor_id,
           sensor_type: sensor.type,
           sensor_name: sensor.name,
           color: sensor.color,
-          value: {}, // thay bằng value khi fix xong hardware
+          value: value, // thay bằng value khi fix xong hardware
           floor_id: sensor.floor_id,
           room_id: sensor.room_id ? sensor.room_id : null,
           x: sensor.x,
@@ -48,7 +48,7 @@ export class SensorService {
   ): Promise<any> {
     switch (sensor_type) {
       case 'temp_humi':
-        return await hardware.getTempHumi(house_id, sensor_id);
+        return await hardware.getTempHumi(house_id);
       case 'light':
         return await hardware.getLight(house_id, sensor_id);
       default:
@@ -70,17 +70,17 @@ export class SensorService {
       return null;
     }
 
-    // const value = await this.getSensorValue(house_id, sensor_id, sensor.type);
-    // if (value) {
-    //   await prisma.sensor_log.create({
-    //     data: {
-    //       house_id: house_id,
-    //       sensor_id: sensor_id,
-    //       value: JSON.stringify(value),
-    //       time: new Date(),
-    //     },
-    //   });
-    // }
+    const value = await this.getSensorValue("house1", sensor_id, sensor.type);
+    if (value) {
+      await prisma.sensor_log.create({
+        data: {
+          house_id: house_id,
+          sensor_id: sensor_id,
+          value: JSON.stringify(value),
+          time: new Date(),
+        },
+      });
+    }
 
     const logs = await prisma.sensor_log.findMany({
       where: { house_id, sensor_id },
@@ -98,7 +98,7 @@ export class SensorService {
         sensor_type: sensor.type,
         sensor_name: sensor.name,
         color: sensor.color,
-        value: {}, // thay bằng value khi fix xong hardware
+        value: value, // thay bằng value khi fix xong hardware
         floor_id: sensor.floor_id,
         room_id: sensor.room_id ? sensor.room_id : null,
         x: sensor.x,

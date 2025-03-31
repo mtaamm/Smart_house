@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { House, HouseMember } from './dto/response.dto';
-import hardware from 'src/hardware/hardware';
+import * as hardware from 'src/hardware/hardware';
 import { Floor, HouseCreate, HouseUpdate } from './dto/request.dto';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -49,26 +49,26 @@ export class HouseService {
                     device_type: device.type,
                     device_name: device.name,
                     color: device.color,
-                    status: {}, //await hardware.getStatus(house.house_id, device.device_id),
+                    status: await hardware.getStatus("house1", device.device_id),
                   })),
                 ),
                 sensors: await Promise.all(
                   room.sensor.map(async (sensor) => {
-                    // const value = await this.getSensorValue(house.house_id, sensor.sensor_id, sensor.type);
-                    // await prisma.sensor_log.create({
-                    //   data: {
-                    //     house_id: house.house_id,
-                    //     sensor_id: sensor.sensor_id,
-                    //     value: JSON.stringify(value),
-                    //     time: new Date(),
-                    //   },
-                    // });
+                    const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+                    await prisma.sensor_log.create({
+                      data: {
+                        house_id: house.house_id,
+                        sensor_id: sensor.sensor_id,
+                        value: JSON.stringify(value),
+                        time: new Date(),
+                      },
+                    });
                     return {
                       sensor_id: sensor.sensor_id,
                       sensor_type: sensor.type,
                       sensor_name: sensor.name,
                       color: sensor.color,
-                      value: {}, //value thay bằng value khi fix xong hardware
+                      value: value, //value thay bằng value khi fix xong hardware
                     };
                   }),
                 ),
@@ -80,28 +80,28 @@ export class HouseService {
                 device_type: device.type,
                 device_name: device.name,
                 color: device.color,
-                status: {}, //await hardware.getStatus(house.house_id, device.device_id),
+                status: await hardware.getStatus("house1", device.device_id),
                 x: device.x,
                 y: device.y,
               })),
             ),
             sensors: await Promise.all(
               floor.sensor.map(async (sensor) => {
-                // const value = await this.getSensorValue(house.house_id, sensor.sensor_id, sensor.type);
-                // await prisma.sensor_log.create({
-                //   data: {
-                //     house_id: house.house_id,
-                //     sensor_id: sensor.sensor_id,
-                //     value: JSON.stringify(value),
-                //     time: new Date(),
-                //   },
-                // });
+                const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+                await prisma.sensor_log.create({
+                  data: {
+                    house_id: house.house_id,
+                    sensor_id: sensor.sensor_id,
+                    value: JSON.stringify(value),
+                    time: new Date(),
+                  },
+                });
                 return {
                   sensor_id: sensor.sensor_id,
                   sensor_type: sensor.type,
                   sensor_name: sensor.name,
                   color: sensor.color,
-                  value: {}, //value thay bằng value khi fix xong hardware
+                  value: value, //value thay bằng value khi fix xong hardware
                   x: sensor.x,
                   y: sensor.y,
                 };
@@ -123,7 +123,7 @@ export class HouseService {
   ): Promise<any> {
     switch (sensor_type) {
       case 'temp_humi':
-        return await hardware.getTempHumi(house_id, sensor_id);
+        return await hardware.getTempHumi(house_id);
       case 'light':
         return await hardware.getLight(house_id, sensor_id);
       default:

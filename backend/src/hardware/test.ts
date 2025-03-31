@@ -1,5 +1,5 @@
 // test.ts
-import * as hardware from './backendhelper';
+import * as hardware from './hardware';
 import * as mqtt from 'mqtt';
 
 // Hàm để xuất tất cả thông tin từ backendhelper

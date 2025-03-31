@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { Device, DeviceDetail, ControlLog } from './dto/response.dto';
-import hardware from 'src/hardware/hardware';
+import * as hardware from 'src/hardware/hardware';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,7 @@ export class DeviceService {
       device_type: device.type,
       device_name: device.name,
       color: device.color,
-      status: {}, //await hardware.getStatus(house_id, device.device_id),
+      status: await hardware.getStatus("house1", device.device_id),
       floor_id: device.floor_id,
       room_id: device.room_id ? device.room_id : null,
       x: device.x,
@@ -54,7 +54,7 @@ export class DeviceService {
         device_type: device.type,
         device_name: device.name,
         color: device.color,
-        status: {},//await hardware.getStatus(house_id, device.device_id),
+        status: await hardware.getStatus("house1", device.device_id),
         floor_id: device.floor_id,
         room_id: device.room_id ? device.room_id : null,
         x: device.x,
@@ -77,24 +77,10 @@ export class DeviceService {
     }
   
     let type = device.type;
-    let on: boolean;
-    let lock: boolean = false;
   
-    if (type === 'door') {
-      if (action !== 'LOCK' && action !== 'UNLOCK') {
-        throw new Error('Invalid action for door');
-      }
-      lock = action === 'LOCK';
-    } else {
-      if (action !== 'ON' && action !== 'OFF') {
-        throw new Error('Invalid action for device');
-      }
-      on = action === 'ON';
-    }
-  
-    const success = true//await hardware.controlDevice(house_id, device_id, type, on, lock);
-  
-    if (success) {
+    try {
+      const success = await hardware.controlDevice("house1", type, device_id, action);
+    
       await prisma.control_log.create({
         data: {
           house_id: house_id,
@@ -103,9 +89,12 @@ export class DeviceService {
           time: new Date(),
         },
       });
+    
+      return true;
+    } catch (error) {
+      console.error('Error controlling device:', error);
+      throw new Error('Failed to control device');
     }
-  
-    return success;
   }
 
   async updateDevicePosition(uid: string, house_id: string, device_id: number, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
