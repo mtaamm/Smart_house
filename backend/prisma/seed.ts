@@ -7,7 +7,7 @@ async function main() {
   // Tạo 2 user
   const user1Id = uuidv4();
   const user2Id = uuidv4();
-  const houseId = uuidv4();
+  const houseId = "e0f1ba9c-aa1d-452e-b928-d2cc3c5eedf6"; // ID của ngôi nhà
 
   // Tạo nhà
   await prisma.house.create({

@@ -49,12 +49,12 @@ export class HouseService {
                     device_type: device.type,
                     device_name: device.name,
                     color: device.color,
-                    status: await hardware.getStatus("house1", device.device_id),
+                    status: await hardware.getStatus(house_id, device.device_id),
                   })),
                 ),
                 sensors: await Promise.all(
                   room.sensor.map(async (sensor) => {
-                    const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+                    const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
                     await prisma.sensor_log.create({
                       data: {
                         house_id: house.house_id,
@@ -82,7 +82,7 @@ export class HouseService {
                   device_type: device.type,
                   device_name: device.name,
                   color: device.color,
-                  status: await hardware.getStatus("house1", device.device_id),
+                  status: await hardware.getStatus(house_id, device.device_id),
                   x: device.x,
                   y: device.y,
                 })),
@@ -91,7 +91,7 @@ export class HouseService {
               floor.sensor
               .filter((sensor) => sensor.x !== null && sensor.y !== null) // Lọc cảm biến có x và y khác null
               .map(async (sensor) => {
-                const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+                const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
                 await prisma.sensor_log.create({
                   data: {
                     house_id: house.house_id,
@@ -218,30 +218,121 @@ export class HouseService {
   }
 
   async updateHouse(houseUpdate: HouseUpdate): Promise<boolean> {
-    await this.validateUserAndHouse(houseUpdate.uid, houseUpdate.house_id);
-    const house = await prisma.house.findUnique({
-      where: { house_id: houseUpdate.house_id },
+    const { house_id, length, width, floors } = houseUpdate;
+  
+    // Kiểm tra xem house có tồn tại không
+    const existingHouse = await prisma.house.findUnique({
+      where: { house_id },
     });
-
-    if (!house) {
+  
+    if (!existingHouse) {
       throw new Error('House not found');
     }
-
-    await prisma.house.delete({
-      where: { house_id: houseUpdate.house_id },
-    });
-
-    const newHouse = await prisma.house.create({
+  
+    // Cập nhật thông tin của house
+    await prisma.house.update({
+      where: { house_id },
       data: {
-        house_id: houseUpdate.house_id,
-        length: houseUpdate.length,
-        width: houseUpdate.width,
-        init_time: new Date(),
+        length,
+        width,
+        update_time: new Date(),
       },
     });
-
-    await this.createFloorsAndRooms(newHouse.house_id, houseUpdate.floors);
-
+  
+    // Xóa các floor, room, device, và sensor liên quan
+    await prisma.floor.deleteMany({ where: { house_id } });
+    await prisma.room.deleteMany({ where: { house_id } });
+    await prisma.device.deleteMany({ where: { house_id } });
+    await prisma.sensor.deleteMany({ where: { house_id } });
+  
+    // Tạo lại các floor, room, device, và sensor
+    for (const floor of floors) {
+      const newFloor = await prisma.floor.create({
+        data: {
+          floor_id: floor.floor_id,
+          house_id,
+        },
+      });
+  
+      for (const room of floor.rooms) {
+        await prisma.room.create({
+          data: {
+            room_id: room.room_id,
+            floor_id: newFloor.floor_id,
+            house_id,
+            name: room.name,
+            length: room.length,
+            width: room.width,
+            x: room.x,
+            y: room.y,
+            color: room.color,
+          },
+        });
+  
+        for (const device of room.devices) {
+          await prisma.device.create({
+            data: {
+              device_id: device.device_id,
+              house_id,
+              floor_id: newFloor.floor_id,
+              room_id: room.room_id,
+              name: device.device_name,
+              type: device.device_type,
+              color: device.color,
+              init_time: new Date(),
+            },
+          });
+        }
+  
+        for (const sensor of room.sensors) {
+          await prisma.sensor.create({
+            data: {
+              sensor_id: sensor.sensor_id,
+              house_id,
+              floor_id: newFloor.floor_id,
+              room_id: room.room_id,
+              name: sensor.sensor_name,
+              type: sensor.sensor_type,
+              color: sensor.color,
+              init_time: new Date(),
+            },
+          });
+        }
+      }
+  
+      for (const floorDevice of floor.devices) {
+        await prisma.device.create({
+          data: {
+            device_id: floorDevice.device_id,
+            house_id,
+            floor_id: newFloor.floor_id,
+            name: floorDevice.device_name,
+            type: floorDevice.device_type,
+            color: floorDevice.color,
+            x: floorDevice.x,
+            y: floorDevice.y,
+            init_time: new Date(),
+          },
+        });
+      }
+  
+      for (const floorSensor of floor.sensors) {
+        await prisma.sensor.create({
+          data: {
+            sensor_id: floorSensor.sensor_id,
+            house_id,
+            floor_id: newFloor.floor_id,
+            name: floorSensor.sensor_name,
+            type: floorSensor.sensor_type,
+            color: floorSensor.color,
+            x: floorSensor.x,
+            y: floorSensor.y,
+            init_time: new Date(),
+          },
+        });
+      }
+    }
+  
     return true;
   }
 
@@ -282,8 +373,6 @@ export class HouseService {
               name: device.device_name,
               type: device.device_type,
               color: device.color,
-              x: room.x,
-              y: room.y,
               init_time: new Date(),
             },
           });
@@ -299,8 +388,6 @@ export class HouseService {
               name: sensor.sensor_name,
               type: sensor.sensor_type,
               color: sensor.color,
-              x: room.x,
-              y: room.y,
               init_time: new Date(),
             },
           });

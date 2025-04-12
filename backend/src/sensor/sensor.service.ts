@@ -15,7 +15,7 @@ export class SensorService {
 
     const sensorList = await Promise.all(
       sensors.map(async (sensor) => {
-        const value = await this.getSensorValue("house1", sensor.sensor_id, sensor.type);
+        const value = await this.getSensorValue(house_id, sensor.sensor_id, sensor.type);
         await prisma.sensor_log.create({
           data: {
             house_id: house_id,
@@ -70,7 +70,7 @@ export class SensorService {
       return null;
     }
 
-    const value = await this.getSensorValue("house1", sensor_id, sensor.type);
+    const value = await this.getSensorValue(house_id, sensor_id, sensor.type);
     if (value) {
       await prisma.sensor_log.create({
         data: {
