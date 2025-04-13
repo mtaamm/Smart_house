@@ -8,10 +8,10 @@ datasource db {
 }
 
 model control_log {
-  time      DateTime @db.DateTime(0)
+  time      DateTime @db.DateTime(3) @default(now())
   device_id Int
   house_id  String   @db.Char(36)
-  action    String   @db.VarChar(45)
+  action    String   @db.VarChar(500)
   device    device   @relation(fields: [device_id, house_id], references: [device_id, house_id], onDelete: Cascade, map: "fk_control_log_device1")
 
   @@id([time, house_id, device_id])
@@ -27,9 +27,9 @@ model device {
   y           Float?        @db.Float
   name        String        @db.VarChar(45)
   type        String        @db.VarChar(45)
-  init_time   DateTime      @db.DateTime(0)
-  update_time DateTime?     @db.DateTime(0)
-  status      String        @db.VarChar(45)
+  color       String        @db.VarChar(6)
+  init_time   DateTime      @db.DateTime(3)
+  update_time DateTime?     @db.DateTime(3)
   control_log control_log[]
   floor       floor         @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_device_floor1")
   house       house         @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_device_house1")
@@ -57,10 +57,10 @@ model house {
   house_id    String    @id @default(uuid()) @db.Char(36)
   length      Float     @db.Float
   width       Float     @db.Float
-  init_time   DateTime  @db.DateTime(0)
-  update_time DateTime? @db.DateTime(0)
+  init_time   DateTime  @db.DateTime(3)
+  update_time DateTime? @db.DateTime(3)
   verify_code Int?      @db.Int
-  verify_time DateTime? @db.DateTime(0)
+  verify_time DateTime? @db.DateTime(3)
   device      device[]
   floor       floor[]
   sensor      sensor[]
@@ -70,7 +70,7 @@ model house {
 model noti {
   noti_id String   @id @default(uuid()) @db.Char(36)
   uid     String   @db.Char(36)
-  time    DateTime @db.DateTime(0)
+  time    DateTime @db.DateTime(3)
   content String   @db.VarChar(500)
   read    Boolean  @db.Bit(1)
   user    user     @relation(fields: [uid], references: [uid], onDelete: Cascade, map: "fk_noti_user")
@@ -82,10 +82,12 @@ model room {
   room_id  Int @default(autoincrement())
   floor_id Int
   house_id String   @db.Char(36)
+  name     String   @db.VarChar(50)
   length   Float    @db.Float
   width    Float    @db.Float
   x        Float    @db.Float
   y        Float    @db.Float
+  color    String   @db.VarChar(6)
   device   device[]
   floor    floor    @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_room_floor1")
   sensor   sensor[]
@@ -103,8 +105,9 @@ model sensor {
   y           Float?       @db.Float
   name        String       @db.VarChar(45)
   type        String       @db.VarChar(45)
-  init_time   DateTime     @db.DateTime(0)
-  update_time DateTime?    @db.DateTime(0)
+  color       String       @db.VarChar(6)
+  init_time   DateTime     @db.DateTime(3)
+  update_time DateTime?    @db.DateTime(3)
   floor       floor        @relation(fields: [floor_id, house_id], references: [floor_id, house_id], onDelete: Cascade, map: "fk_sensor_floor1")
   house       house        @relation(fields: [house_id], references: [house_id], onDelete: Cascade, map: "fk_sensor_house1")
   room        room?        @relation(fields: [room_id, floor_id, house_id], references: [room_id, floor_id, house_id], onDelete: Cascade, map: "fk_sensor_room1")
@@ -117,7 +120,7 @@ model sensor {
 }
 
 model sensor_log {
-  time      DateTime @db.DateTime(0)
+  time      DateTime @db.DateTime(3)
   sensor_id Int
   house_id  String   @db.Char(36)
   value     String   @db.VarChar(500)
@@ -137,9 +140,9 @@ model user {
   age         Int?
   house_id    String?   @db.Char(36)
   root_owner  Boolean?  @db.Bit(1)
-  own_time    DateTime? @db.DateTime(0)
-  create_time DateTime  @db.DateTime(0)
-  update_time DateTime? @db.DateTime(0)
+  own_time    DateTime? @db.DateTime(3)
+  create_time DateTime  @db.DateTime(3)
+  update_time DateTime? @db.DateTime(3)
   noti        noti[]
   house       house?    @relation(fields: [house_id], references: [house_id], map: "fk_user_house1")
 

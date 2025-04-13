@@ -5,6 +5,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 
 @Module({
   providers: [SensorService, PrismaService],
-  controllers: [SensorController]
+  controllers: [SensorController],
 })
 export class SensorModule {}

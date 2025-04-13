@@ -1,56 +1,80 @@
-export class DeviceDTO {
+export class Device {
   device_id: number;
   device_type: string;
   device_name: string;
-  status: string;
+  color: string;
+  status: any;
 }
 
-export class SensorDTO {
+export class Sensor {
   sensor_id: number;
   sensor_type: string;
   sensor_name: string;
+  color: string;
   value: any;
 }
 
-export class RoomDTO {
+export class Room {
   room_id: number;
+  name: string;
   length: number;
   width: number;
   x: number;
   y: number;
-  devices: DeviceDTO[];
-  sensors: SensorDTO[];
+  color: string;
+  devices: Device[];
+  sensors: Sensor[];
 }
 
-export class FloorDeviceDTO {
-  device: DeviceDTO;
+export class FloorDevice {
+  device_id: number;
+  device_type: string;
+  device_name: string;
+  color: string;
+  status: any;
   x: number;
   y: number;
 }
 
-export class FloorSensorDTO {
-  sensor: SensorDTO;
+export class FloorSensor {
+  sensor_id: number;
+  sensor_type: string;
+  sensor_name: string;
+  color: string;
+  value: any;
   x: number;
   y: number;
 }
 
-export class FloorDTO {
+export class Floor {
   floor_id: number;
-  rooms: RoomDTO[];
-  devices: FloorDeviceDTO[];
-  sensors: FloorSensorDTO[];
+  rooms: Room[];
+  devices: FloorDevice[];
+  sensors: FloorSensor[];
 }
 
-export class HouseDTO {
+export class House {
   house_id: string;
   length: number;
   width: number;
-  floors: FloorDTO[];
+  floors: Floor[];
 }
 
-
-export class ApiResponseDTO<T> {
+export class ApiResponse<T> {
   status: 'successful' | 'unsuccessful';
   message: string;
   data: T | null;
+}
+
+export class ApiResponse2 {
+  status: string;
+  message: string;
+}
+
+export class HouseMember {
+  uid: string;
+  name: string;
+  age: number;
+  phone_number: string;
+  email: string;
 }
