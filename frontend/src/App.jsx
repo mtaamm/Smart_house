@@ -1,6 +1,5 @@
-import "./App.css";
-
 import useRouterCustome from "./hooks/useRouterCustome.jsx";
+import React from "react";
 
 function App() {
   const router = useRouterCustome();

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post, Put, Delete, Query } from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiResponse } from '../house/dto/response.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -134,7 +134,7 @@ export class UserController {
   }
 
   @Get('get')
-  async getUser(@Body() param: { auth: Auth }): Promise<
+  async getUser(@Query('uid') uid: string, @Query('auth_code') auth_code: string): Promise<
     ApiResponse<{
       uid: string;
       house_id: string | null;
@@ -146,7 +146,7 @@ export class UserController {
     }>
   > {
     try {
-      const userInfo = await this.userService.getUserInfo(param.auth);
+      const userInfo = await this.userService.getUserInfo({ uid, auth_code });
       return {
         status: 'successful',
         message: 'User information retrieved successfully',
