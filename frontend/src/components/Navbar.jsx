@@ -53,7 +53,7 @@ const Navbar = () => {
         </NavLink>
 
         <NavLink
-          to="/members"
+          to="/member"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
               isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'

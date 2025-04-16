@@ -152,3 +152,14 @@ export class DeleteMemberDto {
   @ApiProperty({ description: 'ID of the member to delete' })
   member_id: string;
 }
+
+export class AddMemberDto {
+  @ApiProperty({ description: 'User ID of the requester' })
+  uid: string;
+
+  @ApiProperty({ description: 'ID of the house' })
+  house_id: string;
+
+  @ApiProperty({ description: 'UID of the member to add' })
+  member_uid: string;
+}

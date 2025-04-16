@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { HouseService } from './house.service';
 import { House, ApiResponse, HouseMember, ApiResponse2 } from './dto/response.dto';
-import { DeleteMemberDto, HouseCreate, HouseUpdate } from './dto/request.dto';
+import { DeleteMemberDto, HouseCreate, HouseUpdate, AddMemberDto } from './dto/request.dto';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('House')
@@ -153,6 +153,38 @@ export class HouseController {
       };
     } catch (error) {
       console.error('Error updating house:', error);
+      return {
+        status: 'unsuccessful',
+        message: error.message || 'An error occurred',
+      };
+    }
+  }
+
+  @Post('add-member')
+  async addMember(
+    @Body() addMemberDto: AddMemberDto,
+  ): Promise<ApiResponse2> {
+    const { uid, house_id, member_uid } = addMemberDto;
+    try {
+      const addResult = await this.houseService.addMember(
+        uid,
+        house_id,
+        member_uid,
+      );
+
+      if (addResult !== 'successful') {
+        return {
+          status: 'unsuccessful',
+          message: addResult,
+        };
+      }
+
+      return {
+        status: 'successful',
+        message: 'successful',
+      };
+    } catch (error) {
+      console.error('Error adding house member:', error);
       return {
         status: 'unsuccessful',
         message: error.message || 'An error occurred',

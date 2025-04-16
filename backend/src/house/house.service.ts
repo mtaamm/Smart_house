@@ -441,4 +441,41 @@ export class HouseService {
       throw new Error('User does not belong to the specified house');
     }
   }
+
+  async addMember(
+    uid: string,
+    house_id: string,
+    member_uid: string,
+  ): Promise<string> {
+    await this.validateUserAndHouse(uid, house_id);
+    try {
+      // Kiểm tra xem người dùng có tồn tại không
+      const member = await prisma.user.findUnique({
+        where: { uid: member_uid },
+      });
+
+      if (!member) {
+        return 'Member not found';
+      }
+
+      // Kiểm tra xem người dùng đã có nhà chưa
+      if (member.house_id) {
+        return 'Member already has a house';
+      }
+
+      // Cập nhật thông tin người dùng
+      await prisma.user.update({
+        where: { uid: member_uid },
+        data: {
+          house_id: house_id,
+          root_owner: false,
+        },
+      });
+
+      return 'successful';
+    } catch (error) {
+      console.error('Error adding house member:', error);
+      return error.message || 'An error occurred';
+    }
+  }
 }

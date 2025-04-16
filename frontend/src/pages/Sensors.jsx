@@ -39,7 +39,7 @@ const Sensors = () => {
     console.log('Current user:', user);
     console.log('User auth:', user?.auth);
     console.log('User auth uid:', user?.auth?.uid);
-    console.log('User auth house_id:', user?.auth?.house_id);
+    console.log('User house_id:', user?.house_id);
 
     if (!user?.auth) {
       console.log('User not authenticated, redirecting to login...');
@@ -54,9 +54,9 @@ const Sensors = () => {
   const fetchSensors = async () => {
     try {
       console.log('Starting fetchSensors...');
-      console.log('User auth state:', {
+      console.log('User state:', {
         uid: user?.auth?.uid,
-        house_id: user?.auth?.house_id,
+        house_id: user?.house_id,
         isAuthenticated: !!user?.auth
       });
 
@@ -67,7 +67,7 @@ const Sensors = () => {
         return;
       }
 
-      if (!user?.auth?.house_id) {
+      if (!user?.house_id) {
         console.log('No house_id found, showing error');
         setError('Vui lòng chọn nhà để xem danh sách cảm biến');
         setLoading(false);
@@ -76,7 +76,7 @@ const Sensors = () => {
 
       const requestParams = {
         uid: user.auth.uid,
-        house_id: user.auth.house_id
+        house_id: user.house_id
       };
       console.log('Making API request with params:', requestParams);
 
@@ -98,10 +98,23 @@ const Sensors = () => {
 
         const processedSensors = sensorsData.map(sensor => {
           console.log('Processing sensor:', sensor);
+          let displayValue = '';
+          let displayUnit = '';
+
+          if (sensor.sensor_type === 'temp_humi') {
+            displayValue = `${sensor.value.temp}°C / ${sensor.value.humi}%`;
+            displayUnit = '';
+          } else {
+            displayValue = sensor.value;
+            displayUnit = sensor.unit || '';
+          }
+
           return {
             ...sensor,
-            displayName: `${sensor.name || 'Cảm biến'} ${sensor.type ? `(${sensor.type})` : ''}`,
-            location: `Tầng ${sensor.floor || 'N/A'}${sensor.room_id ? `, Phòng ${sensor.room_id}` : ''}`
+            displayName: `${sensor.sensor_name || 'Cảm biến'} ${sensor.sensor_type ? `(${sensor.sensor_type})` : ''}`,
+            location: `Tầng ${sensor.floor || 'N/A'}${sensor.room_id ? `, Phòng ${sensor.room_id}` : ''}`,
+            displayValue,
+            displayUnit
           };
         });
 
@@ -284,7 +297,7 @@ const Sensors = () => {
                           <span className={`text-xl font-bold ${
                             sensor.value > (sensor.threshold || 0) ? 'text-red-500' : 'text-green-500'
                           }`}>
-                            {sensor.value} {sensor.unit || ''}
+                            {sensor.displayValue} {sensor.displayUnit}
                           </span>
                         </div>
                         <p className="text-sm text-gray-500 mt-2">
