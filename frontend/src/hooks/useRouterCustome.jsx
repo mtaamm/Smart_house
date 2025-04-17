@@ -1,18 +1,19 @@
-import { Routes, Route, Navigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import Login from '../pages/Login';
-import Dashboard from '../pages/Dashboard';
-import Devices from '../pages/Devices';
-import Sensors from '../pages/Sensors';
-import Settings from '../pages/Settings';
-import Member from '../pages/Member';
-import MainTemplate from '../templates/MainTemplate';
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import Login from "../pages/Login";
+import Dashboard from "../pages/Dashboard";
+import Devices from "../pages/Devices";
+import Sensors from "../pages/Sensors";
+import Settings from "../pages/Settings";
+import Member from "../pages/Member";
+import MainTemplate from "../templates/MainTemplate";
+import ControlPage from "../pages/ControlPage";
 
 const useRouterCustome = () => {
   const user = useSelector((state) => state.user);
 
   const PrivateRoute = ({ children }) => {
-    const auth = localStorage.getItem('auth');
+    const auth = localStorage.getItem("auth");
     return auth ? children : <Navigate to="/login" />;
   };
 
@@ -33,6 +34,7 @@ const useRouterCustome = () => {
         <Route path="sensors" element={<Sensors />} />
         <Route path="settings" element={<Settings />} />
         <Route path="member" element={<Member />} />
+        <Route path="control" element={<ControlPage />} />
       </Route>
     </Routes>
   );
