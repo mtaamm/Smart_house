@@ -143,7 +143,7 @@ export class UserService {
   async login(
     username: string,
     password: string,
-  ): Promise<{ auth: Auth; own_house: boolean; root_owner: boolean }> {
+  ): Promise<{ auth: Auth; house_id: string;  root_owner: boolean }> {
     const user = await this.prisma.user.findFirst({
       where: { username },
     });
@@ -159,7 +159,7 @@ export class UserService {
 
     return {
       auth,
-      own_house: !!user.house_id,
+      house_id: user.house_id,
       root_owner: !!user.root_owner,
     };
   }
