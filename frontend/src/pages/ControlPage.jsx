@@ -1,4 +1,5 @@
 import NavigationBar from "../component/NavBar/navbar.jsx";
+import Navbar from "../components/Navbar.jsx";
 import ItemPanel from "../components/ItemPanel.jsx";
 import template from "../utils/dragable_template.js";
 import { API_CONFIG, USER_CONFIG, DEFAULT_CONFIG } from "../config/appConfig";
@@ -229,12 +230,11 @@ function ControlPage() {
   };
 
   return (
-    <div className="flex flex-row gap-4 w-screen h-screen  bg-purple-50">
-      <section className="left w-[96px] bg-white shadow-md">
-        <NavigationBar></NavigationBar>
-      </section>
+    <div className="flex flex-row gap-4 w-screen h-screen bg-purple-50">
+      <Navbar></Navbar>
+      <div className="w-20 flex-shrink-0"></div>
 
-      <section className="mid flex flex-col gap-4 w-3/5 h-full flex-grow-0">
+      <section className="mid flex flex-col gap-4 flex-grow h-full">
         <div className="w-full h-[90vh] flex-grow-0 overflow-hidden bg-white rounded-lg shadow-md">
           {isLoading ? (
             <div className="w-full h-full flex items-center justify-center">
