@@ -92,7 +92,7 @@ export class UserController {
   async login(
     @Body() param: { username: string; password: string },
   ): Promise<
-    ApiResponse<{ auth: Auth; own_house: boolean; root_owner: boolean }>
+    ApiResponse<{ auth: Auth; house_id: string; root_owner: boolean }>
   > {
     try {
       const loginResponse = await this.userService.login(
