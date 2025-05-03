@@ -126,7 +126,11 @@ export const convertApiDataToItems = (apiData) => {
 // Hàm fetch dữ liệu từ API
 export const fetchHouseMap = async () => {
   try {
-    const response = await axios.get(API_URL);
+    const uid = JSON.parse(localStorage.getItem("auth")).uid;
+    const house_id = localStorage.getItem("house_id");
+    const url = `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.GET_MAP}?uid=${uid}&house_id=${house_id}`;
+
+    const response = await axios.get(url);
     // alert("Res\n" + JSON.stringify(response, null, 2))
     return response.data;
   } catch (error) {
@@ -222,6 +226,7 @@ export const saveHouseMap = async (items) => {
     const apiData = convertItemsToApiData(items);
     
     // Gọi API để lưu dữ liệu
+
     const response = await axios.post(SAVE_API_URL, apiData);
     return response.data;
   } catch (error) {
@@ -235,11 +240,14 @@ export const fetchHouseData = async (setItemsFromApi) => {
   try {
     const items = await getHouseItems();
     // alert("Get " + JSON.stringify(items, null, 2))
-    if (items && items.length > 0) {
-      setItemsFromApi(items);
-      return true;
-    }
-    return false;
+
+    setItemsFromApi(items);
+    return true;
+    // if (items && items.length > 0) {
+    //   setItemsFromApi(items);
+    //   return true;
+    // }
+    // return false;
   } catch (error) {
     console.error('Error fetching house data:', error);
     return false;

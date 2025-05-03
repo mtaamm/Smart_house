@@ -124,8 +124,8 @@ function ControlPage() {
 
       // Chuyển đổi dữ liệu sang định dạng API
       let apiData = {
-        uid: USER_CONFIG.UID,
-        house_id: USER_CONFIG.HOUSE_ID,
+        uid: JSON.parse(localStorage.getItem("auth")).uid,
+        house_id: localStorage.getItem("house_id"),
         length: 0,
         width: 0,
         floors: [
@@ -151,10 +151,10 @@ function ControlPage() {
           rooms.push({
             room_id: roomId,
             name: item.label || `room-${roomId}`,
-            length: item.height,
-            width: item.width,
-            x: item.x,
-            y: item.y,
+            length: parseFloat(item.height),
+            width: parseFloat(item.width),
+            x: parseFloat(item.x),
+            y: parseFloat(item.y),
             color: item.color,
             devices: [],
             sensors: [],
@@ -169,8 +169,8 @@ function ControlPage() {
             device_name: item.label || `device-${deviceId}`,
             color: item.color,
             status: {},
-            x: item.x,
-            y: item.y,
+            x: parseFloat(item.x),
+            y: parseFloat(item.y),
           });
         } else if (item.type === "sensor") {
           // Lấy sensor_id từ id (sensor-1 -> 1)
@@ -181,8 +181,8 @@ function ControlPage() {
             sensor_type: "",
             sensor_name: item.label || `sensor-${sensorId}`,
             color: item.color,
-            x: item.x,
-            y: item.y,
+            x: parseFloat(item.x),
+            y: parseFloat(item.y),
           });
         }
       });

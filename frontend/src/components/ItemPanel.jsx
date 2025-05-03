@@ -33,10 +33,17 @@ export default function ItemPanel() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let processedValue = value;
+
+    // Nếu là trường color, loại bỏ ký tự '#' nếu có
+    if (name === "color") {
+      processedValue = value.replace("#", "");
+    }
+
+    setFormData((prev) => ({ ...prev, [name]: processedValue }));
 
     if (selectedElement?.id) {
-      changeStyle(selectedElement.id, { [name]: value });
+      changeStyle(selectedElement.id, { [name]: processedValue });
     }
   };
 
