@@ -54,7 +54,7 @@ export class SensorController {
       const sensorDetail = await this.sensorService.getSensorDetail(
         uid,
         house_id,
-        sensor_id,
+        Number(sensor_id),
       );
 
       if (!sensorDetail) {
