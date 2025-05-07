@@ -79,7 +79,7 @@ export class DeviceService {
     let type = device.type;
   
     try {
-      const success = await hardware.controlDevice("house1", type, device_id, action);
+      const success = await hardware.controlDevice(house_id, type, device_id, action);
     
       await prisma.control_log.create({
         data: {

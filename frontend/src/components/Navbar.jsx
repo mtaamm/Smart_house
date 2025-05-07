@@ -1,13 +1,29 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../redux/slices/userSlice';
+import axios from 'axios';
 
 const Navbar = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
-    dispatch(logout());
+  const handleLogout = async () => {
+    try {
+      const auth = localStorage.getItem('auth');
+      if (auth) {
+        const authData = JSON.parse(auth);
+        await axios.post('http://localhost:3000/user/logout', {
+          auth: authData
+        });
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      localStorage.removeItem('auth');
+      dispatch(logout());
+      navigate('/login');
+    }
   };
 
   return (

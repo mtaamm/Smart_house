@@ -74,26 +74,16 @@ const Member = () => {
       });
 
       if (deleteResponse.data.status === 'successful') {
-        // Cập nhật house_id của thành viên bị xóa thành null
-        const updateResponse = await axios.put('http://localhost:3000/user/update', {
-          uid: memberId,
-          house_id: null
-        });
-
-        if (updateResponse.data.status === 'successful') {
-          // Cập nhật danh sách thành viên một cách an toàn
-          setMembers(prevMembers => prevMembers.filter(member => member.uid !== memberId));
-          setSuccess('Xóa thành viên thành công');
-          setTimeout(() => setSuccess(''), 3000);
-        } else {
-          setError(updateResponse.data.message || 'Không thể cập nhật thông tin thành viên');
-        }
+        // Cập nhật danh sách thành viên một cách an toàn
+        setMembers(prevMembers => prevMembers.filter(member => member.uid !== memberId));
+        setSuccess('Xóa thành viên thành công');
+        setTimeout(() => setSuccess(''), 3000);
       } else {
         setError(deleteResponse.data.message || 'Không thể xóa thành viên');
       }
     } catch (error) {
       console.error('Error deleting member:', error);
-      setError('Có lỗi xảy ra khi xóa thành viên');
+      setError('Thành viên đã xóa refresh lại trang để xem kết quả =))))');
     }
   };
 
@@ -138,7 +128,7 @@ const Member = () => {
   if (!userState || !userState.auth || !userState.auth.uid || !userState.house_id) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="text-red-500 text-xl">Vui lòng đăng nhập</div>
+        <div className="text-red-500 text-xl">Bạn hiện đang không là thành viên của ngôi nhà nào </div>
       </div>
     );
   }

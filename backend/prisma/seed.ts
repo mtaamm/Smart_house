@@ -58,47 +58,36 @@ async function main() {
     ],
   });
 
-  // Tạo 4 phòng
+  // Tạo 2 phòng
   const rooms = [
     { room_id: 1, floor_id: 1, house_id: houseId, name: "Phòng 101", length: 5, width: 5, x: 2, y: 2, color: "0033ff" },
-    { room_id: 2, floor_id: 1, house_id: houseId, name: "Phòng 102", length: 5, width: 5, x: 6, y: 2, color: "ff0000" },
-    { room_id: 3, floor_id: 2, house_id: houseId, name: "Phòng 201", length: 5, width: 5, x: 2, y: 6, color: "ff0000" },
-    { room_id: 4, floor_id: 2, house_id: houseId, name: "Phòng 202", length: 5, width: 5, x: 6, y: 6, color: "ff0000" },
+    { room_id: 2, floor_id: 2, house_id: houseId, name: "Phòng 102", length: 5, width: 5, x: 6, y: 2, color: "ff0000" },
   ];
   await prisma.room.createMany({ data: rooms });
 
-  // Tạo 4 cửa, 2 đèn, 2 quạt
+  // Tạo 3 cửa, 3 đèn, 3 quạt
   const devices = [
-    ...rooms.map((room, index) => ({
-      device_id: index+1,
-      house_id: houseId,
-      floor_id: room.floor_id,
-      room_id: room.room_id,
-      name: `Cửa phòng ${room.room_id}`,
-      type: "door",
-      color: "ffffff",
-      init_time: new Date(),
-    })),
-    { device_id: 5, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
-    { device_id: 6, house_id: houseId, floor_id: 2, name: "Đèn tầng 2", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
-    { device_id: 7, house_id: houseId, floor_id: 1, name: "Quạt tầng 1", type: "fan", x: 10, y: 5, color: "ffffff", init_time: new Date() },
-    { device_id: 8, house_id: houseId, floor_id: 2, name: "Quạt tầng 2", type: "fan", x: 10, y: 5, color: "ffffff", init_time: new Date() },
+    { device_id: 7, house_id: houseId, floor_id: 1, name: "Cửa nhà chính", type: "door", x: 7, y: 0, color: "ffffff", init_time: new Date() },
+    { device_id: 8, house_id: houseId, floor_id: 1, name: "Cửa nhà phụ", type: "door", x: 7, y: 10, color: "ffffff", init_time: new Date() },
+    { device_id: 9, house_id: houseId, floor_id: 1, name: "Cửa phòng 1", type: "door", room_id: 1, color: "ffffff", init_time: new Date() },
+    { device_id: 10, house_id: houseId, floor_id: 2, name: "Cửa phòng 2", type: "door", room_id: 2, color: "ffffff", init_time: new Date() },
+    { device_id: 11, house_id: houseId, floor_id: 1, name: "Quạt tầng 1", type: "fan", x: 8, y: 5, color: "ffffff", init_time: new Date() },
+    { device_id: 12, house_id: houseId, floor_id: 1, name: "Quạt phòng 1", type: "fan", room_id: 1, color: "ffffff", init_time: new Date() },
+    { device_id: 13, house_id: houseId, floor_id: 2, name: "Quạt phòng 2", type: "fan", room_id: 2, color: "ffffff", init_time: new Date() },
+    { device_id: 14, house_id: houseId, floor_id: 1, name: "Đèn tầng 1", type: "rgb", x: 10, y: 5, color: "ffffff", init_time: new Date() },
+    { device_id: 15, house_id: houseId, floor_id: 1, name: "Đèn phòng 1", type: "rgb", room_id: 1, color: "ffffff", init_time: new Date() },
+    { device_id: 16, house_id: houseId, floor_id: 2, name: "Đèn phòng 2", type: "rgb", room_id: 2, color: "ffffff", init_time: new Date() },
   ];
   await prisma.device.createMany({ data: devices });
 
-  // Tạo 4 cảm biến ánh sáng. 1 temp_humi
+  // Tạo 3 cảm biến ánh sáng, 3 temp_humi
   const sensors = [
-    ...rooms.map((room, index) => ({
-      sensor_id: index+1,
-      house_id: houseId,
-      floor_id: room.floor_id,
-      room_id: room.room_id,
-      name: `Cảm biến ánh sáng phòng ${room.room_id}`,
-      type: "light",
-      color: "ffffff",
-      init_time: new Date(),
-    })),
-    { sensor_id: 5, house_id: houseId, floor_id: 1, name: "Cảm biến 5", type: "temp_humi", x: 6, y: 7, room_id: null, color: "ffffff", init_time: new Date() },
+    { sensor_id: 1, house_id: houseId, floor_id: 1, name: "Cảm biến nhiệt độ-độ ẩm tầng 1", type: "temp_humi", x: 6, y: 7, color: "ffffff", init_time: new Date() },
+    { sensor_id: 2, house_id: houseId, floor_id: 1, name: "Cảm biến nhiệt độ-độ ẩm phòng 1", type: "temp_humi", room_id: 1, color: "ffffff", init_time: new Date() },
+    { sensor_id: 3, house_id: houseId, floor_id: 2, name: "Cảm biến nhiệt độ-độ ẩm phòng 2", type: "temp_humi", room_id: 2, color: "ffffff", init_time: new Date() },
+    { sensor_id: 4, house_id: houseId, floor_id: 1, name: "Cảm biến ánh sáng tầng 1", type: "light", x: 6, y: 10, room_id: null, color: "ffffff", init_time: new Date() },
+    { sensor_id: 5, house_id: houseId, floor_id: 1, name: "Cảm biến ánh sáng phòng 1", type: "light", room_id: 1, color: "ffffff", init_time: new Date() },
+    { sensor_id: 6, house_id: houseId, floor_id: 2, name: "Cảm biến ánh sáng phòng 2", type: "light", room_id: 2, color: "ffffff", init_time: new Date() },
   ];
   await prisma.sensor.createMany({ data: sensors });
 

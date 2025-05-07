@@ -154,7 +154,7 @@ const Sensors = () => {
 
       const response = await axios.get(`http://localhost:3000/sensor/detail`, {
         params: { 
-          sensor_id: sensorId,
+          sensor_id: parseInt(sensorId, 10),
           uid: user.auth.uid,
           house_id: user.auth.house_id
         }
@@ -197,7 +197,7 @@ const Sensors = () => {
       setRefreshingSensors(prev => ({ ...prev, [sensorId]: true }));
       const response = await axios.get(`http://localhost:3000/sensor/detail`, {
         params: { 
-          sensor_id: sensorId,
+          sensor_id: parseInt(sensorId, 10),
           uid: user.auth.uid,
           house_id: user.auth.house_id
         }

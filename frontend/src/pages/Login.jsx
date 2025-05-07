@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../redux/slices/userSlice';
 import axios from 'axios';
 
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const [isLogin, setIsLogin] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
@@ -17,6 +18,12 @@ const Login = () => {
     email: ''
   });
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (user.auth) {
+      navigate('/dashboard');
+    }
+  }, [user.auth, navigate]);
 
   const handleChange = (e) => {
     setFormData({
