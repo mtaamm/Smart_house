@@ -3,138 +3,6 @@ import { useSelector } from 'react-redux';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// Dữ liệu mẫu
-const mockDevices = [
-  {
-    device_id: '1',
-    name: 'Refridgerator',
-    type: 'Tủ lạnh',
-    status: true,
-    icon: '🧊',
-    room_id: 1
-  },
-  {
-    device_id: '2',
-    name: 'Router',
-    type: 'Wifi',
-    status: true,
-    icon: '📡',
-    room_id: 1
-  },
-  {
-    device_id: '3',
-    name: 'Music System',
-    type: 'Âm thanh',
-    status: true,
-    icon: '🎵',
-    room_id: 2
-  },
-  {
-    device_id: '4',
-    name: 'Lamps',
-    type: 'Đèn',
-    status: true,
-    icon: '💡',
-    room_id: 2
-  }
-];
-
-const mockSensors = [
-  {
-    sensor_id: '1',
-    name: 'Nhiệt độ phòng khách',
-    type: 'Nhiệt độ',
-    value: 25,
-    unit: '°C',
-    location: 'Living Room'
-  },
-  {
-    sensor_id: '2',
-    name: 'Độ ẩm phòng khách',
-    type: 'Độ ẩm',
-    value: 35,
-    unit: '%',
-    location: 'Living Room'
-  },
-  {
-    sensor_id: '3',
-    name: 'Nhiệt độ phòng ngủ',
-    type: 'Nhiệt độ',
-    value: 23,
-    unit: '°C',
-    location: 'Bedroom'
-  },
-  {
-    sensor_id: '4',
-    name: 'Độ ẩm phòng ngủ',
-    type: 'Độ ẩm',
-    value: 40,
-    unit: '%',
-    location: 'Bedroom'
-  }
-];
-
-const mockMembers = [
-  {
-    id: '1',
-    name: 'Scarlett',
-    role: 'Admin',
-    avatar: '👩‍💼',
-    access: 'Full Access'
-  },
-  {
-    id: '2',
-    name: 'Nariya',
-    role: 'Member',
-    avatar: '👩',
-    access: 'Full Access'
-  },
-  {
-    id: '3',
-    name: 'Riya',
-    role: 'Member',
-    avatar: '👩',
-    access: 'Full Access'
-  },
-  {
-    id: '4',
-    name: 'Dad',
-    role: 'Member',
-    avatar: '👨',
-    access: 'Full Access'
-  },
-  {
-    id: '5',
-    name: 'Mom',
-    role: 'Member',
-    avatar: '👩',
-    access: 'Full Access'
-  }
-];
-
-const mockHouseData = {
-  name: 'Nhà thông minh mẫu',
-  address: '123 Đường ABC, Quận XYZ, TP.HCM'
-};
-
-// Thêm dữ liệu mẫu cho phòng
-const mockRooms = [
-  {
-    room_id: 1,
-    name: 'Phòng khách',
-    floor_id: 1
-  },
-  {
-    room_id: 2, 
-    name: 'Phòng ngủ',
-    floor_id: 1
-  },
-  {
-    room_id: 3,
-    name: 'Nhà bếp',
-    floor_id: 1
-  }
-];
 
 const getDeviceIcon = (deviceType) => {
   switch (deviceType.toLowerCase()) {
@@ -167,6 +35,13 @@ const getDeviceStatus = (status) => {
   return status.power === 1 || status.value === 1;
 };
 
+const getDeviceStatusText = (deviceType, isActive) => {
+  if (deviceType.toLowerCase() === 'door') {
+    return isActive ? 'Đang mở' : 'Đang đóng';
+  }
+  return isActive ? 'Đang hoạt động' : 'Đã tắt';
+};
+
 const Dashboard = () => {
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
@@ -179,6 +54,7 @@ const Dashboard = () => {
   const [temperature, setTemperature] = useState(25);
   const [loading, setLoading] = useState(true);
   const [controlLoading, setControlLoading] = useState({});
+  const [filterStatus, setFilterStatus] = useState('all');
 
   useEffect(() => {
     if (!user.auth) {
@@ -200,6 +76,11 @@ const Dashboard = () => {
 
     const fetchData = async () => {
       try {
+        if (!user.auth.uid || !user.house_id) {
+          console.error('Thiếu thông tin người dùng hoặc nhà');
+          return;
+        }
+
         const [houseResponse, devicesResponse, sensorsResponse, membersResponse] = await Promise.all([
           axios.get(`http://localhost:3000/house/getmap?uid=${user.auth.uid}&house_id=${user.house_id}`),
           axios.get(`http://localhost:3000/device/getlist?uid=${user.auth.uid}&house_id=${user.house_id}`),
@@ -207,40 +88,92 @@ const Dashboard = () => {
           axios.get(`http://localhost:3000/house/get-members?uid=${user.auth.uid}&house_id=${user.house_id}`)
         ]);
 
-        if (houseResponse.data && houseResponse.data.status === 'successful') {
-          const houseData = houseResponse.data.data;
-          console.log('House data:', houseData);
-          setHouseData(houseData);
-          
-          // Lấy danh sách phòng từ floors
-          if (houseData.floors && Array.isArray(houseData.floors)) {
-            // Tạo danh sách phòng từ tất cả các tầng
-            const allRooms = houseData.floors.flatMap((floor, floorIndex) => {
-              if (floor.rooms && Array.isArray(floor.rooms)) {
-                return floor.rooms.map(room => ({
-                  ...room,
-                  floor_id: floorIndex + 1
-                }));
-              }
-              return [];
-            });
-
-            console.log('All rooms:', allRooms);
-            if (allRooms.length > 0) {
-              setRooms(allRooms);
-              setSelectedRoom(allRooms[0]?.room_id?.toString() || '');
-            } else {
-              console.error('Không tìm thấy phòng trong các tầng');
-            }
-          } else {
-            console.error('Không tìm thấy dữ liệu tầng:', houseData);
-          }
+        if (houseResponse.data?.status === 'error') {
+          console.error('Lỗi khi lấy thông tin nhà:', houseResponse.data.message);
+          return;
         }
+
+        if (devicesResponse.data?.status === 'error') {
+          console.error('Lỗi khi lấy danh sách thiết bị:', devicesResponse.data.message);
+          return;
+        }
+
+        if (sensorsResponse.data?.status === 'error') {
+          console.error('Lỗi khi lấy danh sách cảm biến:', sensorsResponse.data.message);
+          return;
+        }
+
+        if (membersResponse.data?.status === 'error') {
+          console.error('Lỗi khi lấy danh sách thành viên:', membersResponse.data.message);
+          return;
+        }
+
+        const houseData = houseResponse.data.data;
+        console.log('House data:', houseData);
+        setHouseData(houseData);
+        
+        // Lấy danh sách phòng từ floors
+        if (houseData.floors && Array.isArray(houseData.floors)) {
+          // Tạo danh sách phòng từ tất cả các tầng
+          const allRooms = houseData.floors.flatMap((floor, floorIndex) => {
+            if (floor.rooms && Array.isArray(floor.rooms)) {
+              return floor.rooms.map(room => ({
+                ...room,
+                floor_id: floorIndex + 1
+              }));
+            }
+            return [];
+          });
+
+          console.log('All rooms:', allRooms);
+          if (allRooms.length > 0) {
+            setRooms(allRooms);
+            setSelectedRoom(allRooms[0]?.room_id?.toString() || '');
+          } else {
+            console.error('Không tìm thấy phòng trong các tầng');
+          }
+        } else {
+          console.error('Không tìm thấy dữ liệu tầng:', houseData);
+        }
+
         if (devicesResponse.data && devicesResponse.data.status === 'successful') {
           const devicesData = devicesResponse.data.data;
           console.log('Devices data:', devicesData);
-          setDevices(devicesData);
+          
+          // Lấy thông tin chi tiết cho từng thiết bị
+          const devicesWithDetails = await Promise.all(
+            devicesData.map(async (device) => {
+              try {
+                const detailResponse = await axios.get('http://localhost:3000/device/detail', {
+                  params: {
+                    uid: user.auth.uid,
+                    house_id: user.house_id,
+                    device_id: device.device_id
+                  }
+                });
+                
+                if (detailResponse.data?.status === 'successful') {
+                  const lastLog = detailResponse.data.data.logs[0];
+                  return {
+                    ...device,
+                    status: {
+                      ...device.status,
+                      power: lastLog?.action === 'on' ? 1 : 0,
+                      value: lastLog?.action === 'on' ? 1 : 0
+                    }
+                  };
+                }
+                return device;
+              } catch (error) {
+                console.error(`Lỗi khi lấy thông tin chi tiết thiết bị ${device.device_id}:`, error);
+                return device;
+              }
+            })
+          );
+          
+          setDevices(devicesWithDetails);
         }
+
         if (sensorsResponse.data && sensorsResponse.data.status === 'successful') {
           setSensors(sensorsResponse.data.data);
         }
@@ -248,7 +181,12 @@ const Dashboard = () => {
           setMembers(membersResponse.data.data);
         }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        if (error.response?.status === 401) {
+          // Token hết hạn, chuyển hướng về trang login
+          navigate('/login');
+          return;
+        }
+        console.error('Lỗi khi tải dữ liệu:', error);
       } finally {
         setLoading(false);
       }
@@ -263,7 +201,11 @@ const Dashboard = () => {
 
   const handleDeviceControl = async (deviceId, currentStatus) => {
     try {
-      // Đánh dấu thiết bị đang được điều khiển
+      if (!user.auth.uid || !user.house_id) {
+        console.error('Thiếu thông tin người dùng hoặc nhà');
+        return;
+      }
+
       setControlLoading(prev => ({ ...prev, [deviceId]: true }));
 
       const newStatus = !getDeviceStatus(currentStatus);
@@ -274,7 +216,24 @@ const Dashboard = () => {
         action: newStatus ? 'on' : 'off'
       });
 
-      if (response.data && response.data.status === 'successful') {
+      if (response.data?.status === 'error') {
+        console.error('Lỗi khi điều khiển thiết bị:', response.data.message);
+        return;
+      }
+
+      // Lấy thông tin chi tiết thiết bị sau khi điều khiển
+      const detailResponse = await axios.get('http://localhost:3000/device/detail', {
+        params: {
+          uid: user.auth.uid,
+          house_id: user.house_id,
+          device_id: deviceId
+        }
+      });
+
+      if (detailResponse.data?.status === 'successful') {
+        const deviceDetail = detailResponse.data.data.device;
+        const lastLog = detailResponse.data.data.logs[0]; // Lấy log cuối cùng
+
         // Cập nhật trạng thái thiết bị trong state
         setDevices(prevDevices => 
           prevDevices.map(device => {
@@ -283,23 +242,22 @@ const Dashboard = () => {
                 ...device,
                 status: {
                   ...device.status,
-                  power: newStatus ? 1 : 0,
-                  value: newStatus ? 1 : 0
+                  power: lastLog.action === 'on' ? 1 : 0,
+                  value: lastLog.action === 'on' ? 1 : 0
                 }
               };
             }
             return device;
           })
         );
-      } else {
-        console.error('Lỗi khi điều khiển thiết bị:', response.data.message);
-        // Có thể thêm thông báo lỗi ở đây
       }
     } catch (error) {
+      if (error.response?.status === 401) {
+        navigate('/login');
+        return;
+      }
       console.error('Lỗi khi điều khiển thiết bị:', error);
-      // Có thể thêm thông báo lỗi ở đây
     } finally {
-      // Xóa trạng thái loading của thiết bị
       setControlLoading(prev => ({ ...prev, [deviceId]: false }));
     }
   };
@@ -466,14 +424,24 @@ const Dashboard = () => {
           <div>
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-medium text-lg">Thiết bị của tôi</h3>
-              <select className="text-sm bg-transparent border border-gray-200 rounded-lg px-2 py-1">
+              <select 
+                className="text-sm bg-transparent border border-gray-200 rounded-lg px-2 py-1"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+              >
                 <option value="all">Tất cả</option>
                 <option value="on">Đang bật</option>
                 <option value="off">Đã tắt</option>
               </select>
             </div>
             <div className="space-y-3">
-              {devices.map(device => {
+              {devices
+                .filter(device => {
+                  if (filterStatus === 'all') return true;
+                  const isActive = getDeviceStatus(device.status);
+                  return filterStatus === 'on' ? isActive : !isActive;
+                })
+                .map(device => {
                 const isActive = getDeviceStatus(device.status);
                 const isLoading = controlLoading[device.device_id];
                 return (
@@ -491,7 +459,7 @@ const Dashboard = () => {
                           {getDeviceTypeName(device.device_type)} - Tầng {device.floor_id}
                         </div>
                         <div className="text-xs text-gray-400">
-                          {isLoading ? 'Đang xử lý...' : (isActive ? 'Đang hoạt động' : 'Đã tắt')}
+                          {isLoading ? 'Đang xử lý...' : getDeviceStatusText(device.device_type, isActive)}
                         </div>
                       </div>
                     </div>
