@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -39,7 +40,7 @@ const Navbar = () => {
           to="/dashboard"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
-              isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'
+              isActive ? "bg-white text-purple-600" : "hover:bg-purple-500"
             }`
           }
         >
@@ -50,7 +51,7 @@ const Navbar = () => {
           to="/devices"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
-              isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'
+              isActive ? "bg-white text-purple-600" : "hover:bg-purple-500"
             }`
           }
         >
@@ -61,7 +62,7 @@ const Navbar = () => {
           to="/sensors"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
-              isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'
+              isActive ? "bg-white text-purple-600" : "hover:bg-purple-500"
             }`
           }
         >
@@ -72,19 +73,18 @@ const Navbar = () => {
           to="/member"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
-              isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'
+              isActive ? "bg-white text-purple-600" : "hover:bg-purple-500"
             }`
           }
         >
           <span className="text-2xl">👥</span>
         </NavLink>
 
-
         <NavLink
           to="/settings"
           className={({ isActive }) =>
             `p-3 rounded-xl transition-colors ${
-              isActive ? 'bg-white text-purple-600' : 'hover:bg-purple-500'
+              isActive ? "bg-white text-purple-600" : "hover:bg-purple-500"
             }`
           }
         >
@@ -102,4 +102,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;

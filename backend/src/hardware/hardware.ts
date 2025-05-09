@@ -19,6 +19,12 @@ interface SensorData {
   light: number;
 }
 
+// Cấu trúc dữ liệu cho các cảm biến cụ thể
+interface SpecificSensorData {
+  value: number;
+  timestamp: number;
+}
+
 interface DeviceStatus {
   type: string;
   on: boolean;
@@ -27,6 +33,8 @@ interface DeviceStatus {
 
 // Lưu trữ dữ liệu cảm biến và trạng thái thiết bị
 const sensorData: Record<string, SensorData> = {};
+// Lưu trữ dữ liệu cảm biến theo ID cụ thể
+const specificSensorData: Record<string, Record<number, SpecificSensorData>> = {};
 const deviceStatus: Record<string, Record<number, DeviceStatus>> = {};
 
 // Kết nối MQTT client
@@ -38,6 +46,7 @@ mqttClient.on('connect', () => {
   // Subscribe đến tất cả các topics của các nhà (houses)
   mqttClient.subscribe('yolouno/+/sensors');
   mqttClient.subscribe('yolouno/+/status/#');
+  mqttClient.subscribe('yolouno/+/sensor/#'); // Thêm subscription cho dữ liệu cảm biến cụ thể
 });
 
 mqttClient.on('message', (topic, message) => {
@@ -56,10 +65,42 @@ mqttClient.on('message', (topic, message) => {
         humi: data.humi || sensorData[houseId].humi,
         light: data.light || sensorData[houseId].light
       };
+      
+      // Cập nhật dữ liệu cho các cảm biến ánh sáng mặc định (ID 4, 5, 6)
+      if (!specificSensorData[houseId]) {
+        specificSensorData[houseId] = {};
+      }
+      
+      // Cập nhật giá trị của các cảm biến ánh sáng
+      for (let i = LIGHT_ID_MIN; i <= LIGHT_ID_MAX; i++) {
+        specificSensorData[houseId][i] = {
+          value: data.light || 0,
+          timestamp: Date.now()
+        };
+      }
+      
+      console.log(`Received general sensor data for ${houseId}: temp=${data.temp}, humi=${data.humi}, light=${data.light}`);
     } catch (error) {
       console.error('Error parsing sensor data:', error);
     }
-  } 
+  }
+  // Xử lý dữ liệu cảm biến cụ thể
+  else if (topicParts[2] === 'sensor') {
+    const sensorType = topicParts[3];
+    const sensorId = parseInt(topicParts[4]);
+    const value = parseFloat(message.toString());
+    
+    if (!specificSensorData[houseId]) {
+      specificSensorData[houseId] = {};
+    }
+    
+    specificSensorData[houseId][sensorId] = {
+      value: value,
+      timestamp: Date.now()
+    };
+    
+    console.log(`Received specific sensor data: house=${houseId}, type=${sensorType}, id=${sensorId}, value=${value}`);
+  }
   // Xử lý trạng thái thiết bị
   else if (topicParts[2] === 'status') {
     const deviceType = topicParts[3];
@@ -124,15 +165,25 @@ export function getTempHumi(houseId: string): { temp: number; humi: number } {
  * @returns Giá trị ánh sáng
  */
 export function getLight(houseId: string, deviceId: number): number {
-  if (!sensorData[houseId]) {
+  // Kiểm tra xem device ID có phải là ID cảm biến ánh sáng hợp lệ
+  if (deviceId < LIGHT_ID_MIN || deviceId > LIGHT_ID_MAX) {
+    console.log(`Invalid light sensor ID: ${deviceId}`);
     return 0;
   }
   
-  // Kiểm tra xem device ID có phải là ID cảm biến ánh sáng hợp lệ
-  if (deviceId >= LIGHT_ID_MIN && deviceId <= LIGHT_ID_MAX) {
+  // Kiểm tra xem có dữ liệu cụ thể cho cảm biến này không
+  if (specificSensorData[houseId] && specificSensorData[houseId][deviceId]) {
+    console.log(`Using specific sensor data for houseId=${houseId}, deviceId=${deviceId}: ${specificSensorData[houseId][deviceId].value}`);
+    return specificSensorData[houseId][deviceId].value;
+  }
+  
+  // Nếu không có dữ liệu cụ thể, sử dụng dữ liệu tổng hợp
+  if (sensorData[houseId]) {
+    console.log(`Using general sensor data for houseId=${houseId}: ${sensorData[houseId].light}`);
     return sensorData[houseId].light;
   }
   
+  console.log(`No sensor data found for houseId=${houseId}, deviceId=${deviceId}`);
   return 0;
 }
 

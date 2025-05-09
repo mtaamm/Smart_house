@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* @import "tailwindcss"; */
+
+.btn {
+  @apply px-4 py-3 rounded-lg font-medium transition duration-200;
+}
+
+.btn-warning {
+  @apply bg-yellow-500 text-black hover:bg-yellow-600 active:bg-blue-700;
+}
+
+.btn-success {
+  @apply bg-green-400 text-white hover:bg-green-500 active:bg-green-600;
+}
