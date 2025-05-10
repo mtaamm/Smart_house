@@ -155,12 +155,13 @@ export class DeviceController {
   @Post('add')
   @ApiOperation({ summary: 'Add a new device, use -1 for null value' })
   async addDevice(@Body() addDeviceDto: AddDeviceDto): Promise<ApiResponse2> {
-    const { uid, house_id, name, type, color, floor_id, room_id, x, y } =
+    const { uid, house_id, device_id, name, type, color, floor_id, room_id, x, y } =
       addDeviceDto;
     try {
       const success = await this.deviceService.addDevice(
         uid,
         house_id,
+        Number(device_id),
         name,
         type,
         color,

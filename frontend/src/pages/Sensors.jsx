@@ -147,7 +147,7 @@ const Sensors = () => {
 
   const fetchSensorHistory = async (sensorId) => {
     try {
-      if (!user?.auth?.uid || !user?.auth?.house_id) {
+      if (!user?.auth?.uid || !user?.house_id) {
         setError('Vui lòng đăng nhập và chọn nhà để xem lịch sử cảm biến');
         return;
       }
@@ -155,8 +155,8 @@ const Sensors = () => {
       const response = await axios.get(`http://localhost:3000/sensor/detail`, {
         params: { 
           sensor_id: parseInt(sensorId, 10),
-          uid: user.auth.uid,
-          house_id: user.auth.house_id
+          uid: user.auth?.uid,
+          house_id: user.house_id
         }
       });
       
@@ -189,7 +189,7 @@ const Sensors = () => {
         return;
       }
 
-      if (!user?.auth?.house_id) {
+      if (!user?.house_id) {
         setError('Vui lòng chọn nhà để cập nhật cảm biến');
         return;
       }
@@ -197,15 +197,15 @@ const Sensors = () => {
       setRefreshingSensors(prev => ({ ...prev, [sensorId]: true }));
       const response = await axios.get(`http://localhost:3000/sensor/detail`, {
         params: { 
-          sensor_id: parseInt(sensorId, 10),
           uid: user.auth.uid,
-          house_id: user.auth.house_id
+          house_id: user.house_id,
+          sensor_id: parseInt(sensorId, 10),
         }
       });
-      
+      console.log('Refresh sensor response:', response);
       if (response.data.status === 'successful' && response.data.data) {
         setSensors(prev => prev.map(sensor => 
-          sensor.sensor_id === sensorId ? response.data.data : sensor
+          sensor.sensor_id === sensorId ? { ...sensor, value: response.data.data.sensor.value } : sensor
         ));
       } else {
         console.error('API Error:', response.data.message);
@@ -350,4 +350,4 @@ const Sensors = () => {
   );
 };
 
-export default Sensors; 
+export default Sensors;

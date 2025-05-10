@@ -135,7 +135,7 @@ export class DeviceService {
     return !!updatedDevice;
   }
 
-  async addDevice(uid: string, house_id: string, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
+  async addDevice(uid: string, house_id: string, device_id: number, name: string, type: string, color: string, floor_id: number, room_id: number, x: number | null, y: number | null): Promise<boolean> {
     await this.validateUserAndHouse(uid, house_id);
     room_id = room_id === -1 ? null : room_id;
     x = x === -1 ? null : x;
@@ -149,6 +149,7 @@ export class DeviceService {
       data: {
         house_id,
         name,
+        device_id,
         type,
         color,
         floor_id,

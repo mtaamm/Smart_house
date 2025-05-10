@@ -75,7 +75,6 @@ const useRouterCustome = () => {
         <Route path="sensors" element={<Sensors />} />
         <Route path="settings" element={<Settings />} />
         <Route path="member" element={<Member />} />
-        <Route path="control" element={<ControlPage />} />
       </Route>
     </Routes>
   );

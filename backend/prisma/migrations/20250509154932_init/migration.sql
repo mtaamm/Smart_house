@@ -1,9 +1,9 @@
 -- CreateTable
 CREATE TABLE `control_log` (
-    `time` DATETIME(0) NOT NULL,
+    `time` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `device_id` INTEGER NOT NULL,
     `house_id` CHAR(36) NOT NULL,
-    `action` VARCHAR(45) NOT NULL,
+    `action` VARCHAR(500) NOT NULL,
 
     INDEX `fk_control_log_device1_idx`(`device_id`, `house_id`),
     PRIMARY KEY (`time`, `house_id`, `device_id`)
@@ -19,9 +19,9 @@ CREATE TABLE `device` (
     `y` FLOAT NULL,
     `name` VARCHAR(45) NOT NULL,
     `type` VARCHAR(45) NOT NULL,
-    `init_time` DATETIME(0) NOT NULL,
-    `update_time` DATETIME(0) NULL,
-    `status` VARCHAR(45) NOT NULL,
+    `color` VARCHAR(6) NOT NULL,
+    `init_time` DATETIME(3) NOT NULL,
+    `update_time` DATETIME(3) NULL,
 
     INDEX `fk_device_floor1_idx`(`floor_id`, `house_id`),
     INDEX `fk_device_house1_idx`(`house_id`),
@@ -43,8 +43,10 @@ CREATE TABLE `house` (
     `house_id` CHAR(36) NOT NULL,
     `length` FLOAT NOT NULL,
     `width` FLOAT NOT NULL,
-    `init_time` DATETIME(0) NOT NULL,
-    `update_time` DATETIME(0) NULL,
+    `init_time` DATETIME(3) NOT NULL,
+    `update_time` DATETIME(3) NULL,
+    `verify_code` INTEGER NULL,
+    `verify_time` DATETIME(3) NULL,
 
     PRIMARY KEY (`house_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -53,7 +55,7 @@ CREATE TABLE `house` (
 CREATE TABLE `noti` (
     `noti_id` CHAR(36) NOT NULL,
     `uid` CHAR(36) NOT NULL,
-    `time` DATETIME(0) NOT NULL,
+    `time` DATETIME(3) NOT NULL,
     `content` VARCHAR(500) NOT NULL,
     `read` BIT(1) NOT NULL,
 
@@ -66,10 +68,12 @@ CREATE TABLE `room` (
     `room_id` INTEGER NOT NULL AUTO_INCREMENT,
     `floor_id` INTEGER NOT NULL,
     `house_id` CHAR(36) NOT NULL,
+    `name` VARCHAR(50) NOT NULL,
     `length` FLOAT NOT NULL,
     `width` FLOAT NOT NULL,
     `x` FLOAT NOT NULL,
     `y` FLOAT NOT NULL,
+    `color` VARCHAR(6) NOT NULL,
 
     INDEX `fk_room_floor1_idx`(`floor_id`, `house_id`),
     PRIMARY KEY (`room_id`, `floor_id`, `house_id`)
@@ -85,8 +89,9 @@ CREATE TABLE `sensor` (
     `y` FLOAT NULL,
     `name` VARCHAR(45) NOT NULL,
     `type` VARCHAR(45) NOT NULL,
-    `init_time` DATETIME(0) NOT NULL,
-    `update_time` DATETIME(0) NULL,
+    `color` VARCHAR(6) NOT NULL,
+    `init_time` DATETIME(3) NOT NULL,
+    `update_time` DATETIME(3) NULL,
 
     INDEX `fk_sensor_floor1_idx`(`floor_id`, `house_id`),
     INDEX `fk_sensor_house1_idx`(`house_id`),
@@ -96,7 +101,7 @@ CREATE TABLE `sensor` (
 
 -- CreateTable
 CREATE TABLE `sensor_log` (
-    `time` DATETIME(0) NOT NULL,
+    `time` DATETIME(3) NOT NULL,
     `sensor_id` INTEGER NOT NULL,
     `house_id` CHAR(36) NOT NULL,
     `value` VARCHAR(500) NOT NULL,
@@ -116,9 +121,9 @@ CREATE TABLE `user` (
     `age` INTEGER NULL,
     `house_id` CHAR(36) NULL,
     `root_owner` BIT(1) NULL,
-    `own_time` DATETIME(0) NULL,
-    `create_time` DATETIME(0) NOT NULL,
-    `update_time` DATETIME(0) NULL,
+    `own_time` DATETIME(3) NULL,
+    `create_time` DATETIME(3) NOT NULL,
+    `update_time` DATETIME(3) NULL,
 
     INDEX `fk_user_house1_idx`(`house_id`),
     PRIMARY KEY (`uid`)

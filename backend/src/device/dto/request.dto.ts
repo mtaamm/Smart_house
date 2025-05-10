@@ -44,6 +44,9 @@ export class AddDeviceDto {
   @ApiProperty({ description: 'ID of the house' })
   house_id: string;
 
+  @ApiProperty({ description: 'ID of the device' })
+  device_id: number;
+
   @ApiProperty({ description: 'Name of the device' })
   name: string;
 

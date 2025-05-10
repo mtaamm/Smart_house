@@ -11,6 +11,7 @@ const Devices = () => {
   const [error, setError] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
   const [newDevice, setNewDevice] = useState({
+    device_id: null,
     name: '',
     type: '',
     color: 'ffffff',
@@ -262,6 +263,23 @@ const Devices = () => {
             <div className="bg-white p-6 rounded-lg w-96">
               <h2 className="text-xl font-bold mb-4">Thêm thiết bị mới</h2>
               <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Cổng điều khiển</label>
+                  <input
+                    type="number"
+                    value={newDevice.device_id}
+                    onChange={(e) => {
+                      setNewDevice({...newDevice, device_id: e.target.value});
+                      setNewDeviceError(''); // Xóa lỗi khi người dùng bắt đầu nhập
+                    }}
+                    className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 ${
+                      newDeviceError ? 'border-red-500' : ''
+                    }`}
+                  />
+                  {newDeviceError && (
+                    <p className="mt-1 text-sm text-red-600">{newDeviceError}</p>
+                  )}
+                </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Tên thiết bị</label>
                   <input
