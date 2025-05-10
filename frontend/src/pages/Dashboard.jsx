@@ -263,9 +263,9 @@ const Dashboard = () => {
   };
 
   // Lấy cảm biến cho phòng được chọn
-  const roomSensors = sensors.filter(sensor => sensor.room_id?.toString() === selectedRoom);
-  const roomTemperature = roomSensors.find(sensor => sensor.type === 'Nhiệt độ')?.value || temperature;
-  const roomHumidity = roomSensors.find(sensor => sensor.type === 'Độ ẩm')?.value || 35;
+  const roomSensors = sensors;
+  const roomTemperature = roomSensors.find(sensor => sensor.type === 'temp_humi')?.value.temp || temperature;
+  const roomHumidity = roomSensors.find(sensor => sensor.type === 'temp_humi')?.value.humi || 35;
 
   // Lọc thiết bị theo phòng được chọn
   const roomDevices = devices.filter(device => device.room_id?.toString() === selectedRoom);
@@ -305,7 +305,7 @@ const Dashboard = () => {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2">
               <span className="text-xl">🌡️</span>
-              <span className="font-medium">+{temperature}°C</span>
+              <span className="font-medium">+{sensors[0]?.value?.temp||25}°C</span>
               <span className="text-gray-500">Outdoor temperature</span>
             </div>
             <div className="flex items-center gap-2">
@@ -327,11 +327,11 @@ const Dashboard = () => {
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
                 <span>💧</span>
-                <span>{roomHumidity}%</span>
+                <span>{sensors[0]?.value?.humi||75}%</span>
               </div>
               <div className="flex items-center gap-2">
                 <span>🌡️</span>
-                <span>{roomTemperature}°C</span>
+                <span>{sensors[0]?.value?.temp||25}°C</span>
               </div>
               <select 
                 value={selectedRoom}
@@ -390,7 +390,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between mb-6">
               <div>
                 <h3 className="text-xl font-medium mb-1">Nhiệt độ {rooms.find(r => r.room_id.toString() === selectedRoom)?.name || ''}</h3>
-                <div className="text-sm text-gray-500">Điều chỉnh nhiệt độ phòng</div>
+
               </div>
               <label className="relative inline-flex items-center cursor-pointer">
                 <input type="checkbox" className="sr-only peer" defaultChecked />
@@ -398,22 +398,12 @@ const Dashboard = () => {
               </label>
             </div>
             <div className="flex items-center justify-between bg-gray-50 p-6 rounded-xl">
-              <button 
-                onClick={() => handleTemperatureChange(-1)}
-                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-xl hover:bg-gray-100 transition-colors shadow-sm"
-              >
-                -
-              </button>
+              
               <div className="text-center">
-                <div className="text-5xl font-light mb-2">{roomTemperature}°C</div>
+                <div className="text-5xl font-light mb-2">{sensors[0]?.value?.temp||25}°C</div>
                 <div className="text-sm text-gray-500">Nhiệt độ hiện tại</div>
               </div>
-              <button 
-                onClick={() => handleTemperatureChange(1)}
-                className="w-12 h-12 flex items-center justify-center bg-white rounded-full text-xl hover:bg-gray-100 transition-colors shadow-sm"
-              >
-                +
-              </button>
+              
             </div>
           </div>
         </div>

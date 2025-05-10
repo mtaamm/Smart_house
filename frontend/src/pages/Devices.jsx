@@ -227,7 +227,7 @@ const Devices = () => {
                     <h2 className="text-xl font-semibold mb-2">{device.device_name}</h2>
                     <p className="text-gray-600">Loại: {device.device_type}</p>
                     <p className="text-gray-600">Vị trí: Tầng {device.floor_id} - Phòng {device.room_id || 'Chung'}</p>
-                    <p className="text-gray-600">Tọa độ: ({device.x}, {device.y})</p>
+                    <p className="text-gray-600">Tọa độ: {device.x?'('+device.x+',' +device.y+')':'Phòng' + device.room_id }</p>
                   </div>
                   <div className="flex flex-col gap-2">
                     {/* <button
